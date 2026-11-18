@@ -120,7 +120,92 @@
 
       <!-- Avis -->
       <section class="avis">
-        <h2 class="titre-section avis__titre">Avis des clients</h2>
+        <div class="avis__entete">
+          <h2 class="titre-section">Avis des clients</h2>
+
+          @if (peutNoter() && !dejaNote() && !formulaireOuvert()) {
+            <button type="button" class="bouton bouton--contour" (click)="formulaireOuvert.set(true)">
+              Donner mon avis
+            </button>
+          }
+        </div>
+
+        @if (avisEnvoye()) {
+          <app-alerte message="Merci, votre avis est publié." ton="succes" />
+        }
+
+        <!-- Le formulaire n'apparaît que pour un client ayant acheté et payé
+             l'article : l'API refuse les autres, et proposer un bouton qui
+             mène systématiquement à une erreur vaut moins que pas de bouton. -->
+        @if (formulaireOuvert()) {
+          <form class="noter" (submit)="$event.preventDefault(); envoyerAvis()">
+            @if (erreurAvis(); as texte) {
+              <app-alerte [message]="texte" ton="echec" />
+            }
+
+            <fieldset class="noter__notes">
+              <legend class="champ__libelle">Votre note</legend>
+              <div class="noter__etoiles">
+                @for (valeur of [1, 2, 3, 4, 5]; track valeur) {
+                  <button
+                    type="button"
+                    class="noter__etoile"
+                    [class.est-choisie]="valeur <= note()"
+                    [attr.aria-label]="valeur + ' étoile' + (valeur > 1 ? 's' : '')"
+                    [attr.aria-pressed]="valeur === note()"
+                    (click)="choisirNote(valeur)"
+                  >
+                    ★
+                  </button>
+                }
+                <span class="noter__rappel">
+                  {{ note() > 0 ? note() + ' sur 5' : 'Choisissez une note' }}
+                </span>
+              </div>
+            </fieldset>
+
+            <div class="champ">
+              <label class="champ__libelle" for="commentaire">Votre commentaire</label>
+              <textarea
+                id="commentaire"
+                class="champ__saisie noter__texte"
+                rows="4"
+                maxlength="1000"
+                placeholder="Qu'avez-vous pensé de cet article ?"
+                [value]="commentaire()"
+                (input)="commentaire.set($any($event.target).value)"
+              ></textarea>
+              <p class="champ__aide">
+                Facultatif, 1000 caractères maximum.
+              </p>
+            </div>
+
+            <div class="noter__actions">
+              <button type="submit" class="bouton bouton--plein" [disabled]="envoiAvis()">
+                {{ envoiAvis() ? 'Publication…' : 'Publier mon avis' }}
+              </button>
+              <button
+                type="button"
+                class="bouton bouton--sobre"
+                (click)="formulaireOuvert.set(false)"
+              >
+                Annuler
+              </button>
+            </div>
+          </form>
+        } @else if (connecte() && !peutNoter() && !dejaNote()) {
+          <p class="avis__condition">
+            Seuls les clients ayant acheté et payé cet article peuvent laisser
+            un avis.
+          </p>
+        } @else if (!connecte()) {
+          <p class="avis__condition">
+            <a routerLink="/connexion" [queryParams]="{ suite: '/article/' + a.id }">
+              Connectez-vous
+            </a>
+            pour laisser un avis, si vous avez déjà acheté cet article.
+          </p>
+        }
 
         @if (avis() === null) {
           <app-squelette forme="texte" [nombre]="3" annonce="Chargement des avis" />

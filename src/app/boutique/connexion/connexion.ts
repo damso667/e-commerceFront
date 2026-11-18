@@ -40,6 +40,10 @@ export class Connexion {
 
   private readonly suite = this.route.snapshot.queryParamMap.get('suite');
 
+  /** Posé par l'intercepteur quand une session a expiré en cours de route. */
+  protected readonly sessionExpiree =
+    this.route.snapshot.queryParamMap.get('expiree') === '1';
+
   protected readonly peutEnvoyer = computed(
     () => !this.envoi() && this.email().trim() !== '' && this.motDePasse() !== '',
   );

@@ -5,6 +5,13 @@
       Connectez-vous pour commander sur {{ nom() }}.
     </p>
 
+    @if (sessionExpiree && !erreur()) {
+      <app-alerte
+        message="Votre session a expiré. Reconnectez-vous, vous reviendrez où vous étiez."
+        ton="attente"
+      />
+    }
+
     @if (erreur(); as texte) {
       <app-alerte [message]="texte" ton="echec" />
     }

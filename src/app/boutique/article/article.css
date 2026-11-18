@@ -202,8 +202,100 @@
   border-top: 1px solid var(--trait);
 }
 
-.avis__titre {
+.avis__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e4);
   margin-bottom: var(--e5);
+}
+
+.avis__condition {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  padding: var(--e4);
+  background: var(--fond-doux);
+  border-radius: var(--rayon);
+  margin-bottom: var(--e5);
+  max-width: 54ch;
+}
+
+.avis__condition a {
+  font-weight: 600;
+  color: var(--encre);
+}
+
+/* ---------- Formulaire d'avis ---------- */
+
+.noter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e4);
+  padding: var(--e5);
+  background: var(--fond-doux);
+  border-radius: var(--rayon-grand);
+  margin-bottom: var(--e6);
+  max-width: 44rem;
+}
+
+.noter__notes {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+}
+
+.noter__etoiles {
+  display: flex;
+  align-items: center;
+  gap: var(--e1);
+}
+
+/* L'étoile visible fait 28 px, mais la cible tactile en fait 44 : viser une
+   étoile au pouce est sinon un exercice de précision. */
+.noter__etoile {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--trait-fort);
+  transition:
+    color var(--duree-courte) var(--sortie),
+    transform var(--duree-courte) var(--sortie);
+}
+
+.noter__etoile:hover {
+  color: #c08a24;
+  transform: scale(1.12);
+}
+
+.noter__etoile.est-choisie {
+  color: #c08a24;
+}
+
+.noter__rappel {
+  margin-left: var(--e3);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+}
+
+.noter__texte {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.55;
+}
+
+.noter__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e3);
 }
 
 .avis__vide {
