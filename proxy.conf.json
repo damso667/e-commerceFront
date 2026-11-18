@@ -1,0 +1,19 @@
+{
+  "/api": {
+    "target": "https://ecommerce-api-60sl.onrender.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "warn",
+    "cookieDomainRewrite": "",
+    "timeout": 200000,
+    "proxyTimeout": 200000
+  },
+  "/actuator": {
+    "target": "https://ecommerce-api-60sl.onrender.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "warn",
+    "timeout": 200000,
+    "proxyTimeout": 200000
+  }
+}
