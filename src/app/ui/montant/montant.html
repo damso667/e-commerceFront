@@ -1,0 +1,6 @@
+<span class="m" [class.m--invisible]="valeur() === null">
+  <span class="m__chiffres montant">{{ formate() }}</span>
+  @if (devise()) {
+    <span class="m__devise montant--devise">FCFA</span>
+  }
+</span>

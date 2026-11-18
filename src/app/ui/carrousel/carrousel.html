@@ -1,0 +1,117 @@
+<section
+  class="car"
+  role="region"
+  aria-roledescription="carrousel"
+  [attr.aria-label]="etiquette()"
+  (mouseenter)="suspendre()"
+  (mouseleave)="reprendre()"
+  (focusin)="suspendre()"
+  (focusout)="reprendre()"
+>
+  <div class="car__piste" #piste>
+    @for (diapo of diapositives(); track diapo.id; let rang = $index) {
+      <div
+        class="car__diapo"
+        [attr.data-rang]="rang"
+        role="group"
+        aria-roledescription="diapositive"
+        [attr.aria-label]="rang + 1 + ' sur ' + nombre()"
+      >
+        @if (diapo.imageUrl) {
+          <img
+            class="car__image"
+            [src]="diapo.imageUrl"
+            alt=""
+            [attr.loading]="rang === 0 ? 'eager' : 'lazy'"
+            [attr.fetchpriority]="rang === 0 ? 'high' : 'auto'"
+            decoding="async"
+          />
+        } @else {
+          <!-- Aucune photo fournie : composition typographique plutôt qu'un
+               rectangle gris ou un « image à venir ». -->
+          <div class="car__typo" [attr.data-variante]="rang % 3"></div>
+        }
+
+        <!-- Le voile couvre toute la largeur ; seul le texte est limité.
+             Sinon le dégradé s'arrête net au bord du bloc et laisse une
+             arête verticale en plein milieu de l'image. -->
+        <div class="car__voile">
+          <div class="car__bloc">
+            <h2 class="car__titre titre-affiche">{{ diapo.titre }}</h2>
+            @if (diapo.texte) {
+              <p class="car__texte">{{ diapo.texte }}</p>
+            }
+            @if (diapo.lien) {
+              <a class="bouton bouton--plein car__action" [routerLink]="diapo.lien">
+                {{ diapo.libelleLien || 'Découvrir' }}
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (multiple()) {
+    <div class="car__commandes">
+      <button
+        type="button"
+        class="car__fleche car__fleche--avant"
+        aria-label="Diapositive précédente"
+        (click)="aller(index() - 1)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+
+      <div class="car__puces" role="tablist" aria-label="Choisir une diapositive">
+        @for (diapo of diapositives(); track diapo.id; let rang = $index) {
+          <button
+            type="button"
+            class="car__puce"
+            role="tab"
+            [class.est-active]="index() === rang"
+            [attr.aria-selected]="index() === rang"
+            [attr.aria-label]="'Diapositive ' + (rang + 1)"
+            (click)="aller(rang)"
+          ></button>
+        }
+      </div>
+
+      <!-- WCAG 2.2.2 : un contenu qui défile seul doit pouvoir être
+           arrêté. Masqué quand le défilement automatique est déjà coupé. -->
+      @if (intervalleMs() > 0 && !mouvementReduit) {
+        <button
+          type="button"
+          class="car__pause"
+          [attr.aria-label]="enPause() ? 'Relancer le défilement' : 'Arrêter le défilement'"
+          (click)="basculerPause()"
+        >
+          @if (enPause()) {
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M8 5v14l11-7z" fill="currentColor" />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor" />
+            </svg>
+          }
+        </button>
+      }
+
+      <button
+        type="button"
+        class="car__fleche car__fleche--apres"
+        aria-label="Diapositive suivante"
+        (click)="aller(index() + 1)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
+  }
+</section>

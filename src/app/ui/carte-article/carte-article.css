@@ -1,0 +1,119 @@
+.carte {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.carte__lien {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e3);
+  text-decoration: none;
+  min-width: 0;
+}
+
+.carte__visuel {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--rayon);
+  background: var(--fond-doux);
+}
+
+/* Le zoom à l'approche est le seul mouvement de la carte : discret, et
+   uniquement là où un pointeur existe. Sur tactile il ne se déclencherait
+   qu'au toucher, ce qui est parasite. */
+@media (hover: hover) and (pointer: fine) {
+  .carte__visuel app-pastille {
+    display: block;
+    transition: transform var(--duree-longue) var(--sortie);
+  }
+
+  .carte__lien:hover .carte__visuel app-pastille {
+    transform: scale(1.035);
+  }
+}
+
+.carte__texte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e1);
+  min-width: 0;
+}
+
+.carte__rayon {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  letter-spacing: 0.04em;
+}
+
+.carte__nom {
+  font-size: var(--t-base);
+  font-weight: 500;
+  line-height: 1.35;
+  /* Deux lignes puis coupe : un libellé long ne doit pas décaler le prix
+     d'une carte par rapport à ses voisines. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.carte__lien:hover .carte__nom {
+  text-decoration: underline;
+}
+
+.carte__prix {
+  font-size: var(--t-moyen);
+  margin-top: var(--e1);
+}
+
+/* ---------- Le bouton d'ajout ----------
+   Sur tactile il est toujours visible : un bouton qui n'apparaît qu'au
+   survol n'existe pas sur téléphone. Sur pointeur fin, il se révèle à
+   l'approche pour laisser la grille respirer. */
+.carte__ajout {
+  margin-top: var(--e3);
+  min-height: 44px;
+  padding: var(--e2) var(--e4);
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon);
+  background: var(--fond);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--texte);
+  transition:
+    background var(--duree-courte) var(--sortie),
+    border-color var(--duree-courte) var(--sortie),
+    color var(--duree-courte) var(--sortie),
+    opacity var(--duree-courte) var(--sortie);
+}
+
+.carte__ajout:hover:not(:disabled) {
+  background: var(--texte);
+  border-color: var(--texte);
+  color: var(--texte-inverse);
+}
+
+.carte__ajout:disabled {
+  color: var(--texte-faible);
+  cursor: wait;
+}
+
+.carte--ajoutee .carte__ajout {
+  background: var(--succes-voile);
+  border-color: var(--succes);
+  color: var(--succes);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carte__ajout {
+    opacity: 0;
+  }
+
+  .carte:hover .carte__ajout,
+  .carte:focus-within .carte__ajout,
+  .carte--ajoutee .carte__ajout {
+    opacity: 1;
+  }
+}

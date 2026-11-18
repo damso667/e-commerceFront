@@ -1,0 +1,21 @@
+.m {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.28em;
+  white-space: nowrap;
+}
+
+.m__chiffres {
+  font-size: inherit;
+}
+
+.m__devise {
+  /* Alignée sur la ligne de base des chiffres, pas centrée : sinon la
+     mention flotte au milieu du montant. */
+  align-self: flex-end;
+  padding-bottom: 0.1em;
+}
+
+.m--invisible {
+  opacity: 0.45;
+}

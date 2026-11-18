@@ -1,0 +1,73 @@
+@if (erreur(); as texte) {
+  <div class="contenu accueil__erreur">
+    <app-alerte [message]="texte" ton="echec" [reessayable]="true" (reessayer)="charger()" />
+  </div>
+}
+
+@if (articles() === null && !erreur()) {
+  <!-- Le squelette a la forme de ce qui arrive : quand les vraies cartes
+       se posent, rien ne bouge. -->
+  <div class="contenu accueil__attente">
+    <div class="accueil__squelette-car"></div>
+    <app-squelette forme="grille" [nombre]="8" annonce="Chargement du catalogue" />
+  </div>
+} @else if (articles()?.length === 0) {
+  <div class="contenu">
+    <app-etat-vide
+      titre="Le catalogue est vide"
+      detail="Aucun article n'est en vente pour le moment. Revenez bientôt."
+    />
+  </div>
+} @else if (articles()) {
+  <div class="contenu accueil__haut">
+    <app-carrousel [diapositives]="diapositives()" etiquette="Mises en avant" />
+  </div>
+
+  <!-- Sélection d'ouverture -->
+  <section class="section contenu">
+    <header class="bande">
+      <h2 class="titre-section">Notre sélection</h2>
+      <a class="bande__lien" routerLink="/catalogue">Tout voir</a>
+    </header>
+
+    <div class="grille-produits">
+      @for (article of vedettes(); track article.id; let rang = $index) {
+        <app-carte-article
+          [article]="article"
+          [categorie]="nomRayon(article.categorieId)"
+          [prioritaire]="rang < 4"
+          [enCours]="ajoutEnCours() === article.id"
+          [ajoute]="ajoute() === article.id"
+          (ajouter)="ajouterAuPanier($event)"
+        />
+      }
+    </div>
+  </section>
+
+  <!-- Les rayons, un par section -->
+  @for (rayon of rayons(); track rayon.idCategorie) {
+    <section class="section section--rayon contenu">
+      <header class="bande">
+        <h2 class="titre-section">{{ rayon.nom }}</h2>
+        <a
+          class="bande__lien"
+          routerLink="/catalogue"
+          [queryParams]="{ categorie: rayon.idCategorie }"
+        >
+          Voir les {{ rayon.total }} articles
+        </a>
+      </header>
+
+      <div class="grille-produits">
+        @for (article of rayon.articles; track article.id) {
+          <app-carte-article
+            [article]="article"
+            [enCours]="ajoutEnCours() === article.id"
+            [ajoute]="ajoute() === article.id"
+            (ajouter)="ajouterAuPanier($event)"
+          />
+        }
+      </div>
+    </section>
+  }
+}

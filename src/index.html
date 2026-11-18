@@ -1,13 +1,138 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>ECommerceFront</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <!-- Pas de maximum-scale ni user-scalable=no : empêcher le zoom casse
+         l'accessibilité pour qui a besoin d'agrandir. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Titre, description, couleur de thème, manifeste et icône sont posés
+         au démarrage par ParametresService depuis l'API : la marque vient de
+         la base, jamais du build. Les valeurs ci-dessous ne servent que le
+         temps du premier chargement. -->
+    <title>Boutique en ligne</title>
+    <meta name="description" content="Boutique en ligne, paiement mobile money." />
+    <meta name="theme-color" content="#0B6B5E" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- SVG d'abord : net à toutes les tailles et suit le thème du
+         navigateur. Le PNG reste pour Safari et les vieux moteurs. -->
+    <link rel="icon" href="/marque.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icons/favicon-48.png" type="image/png" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/icons/icone-192.png" />
+
+    <!-- Les deux polices portent toute l'identité : préchargées pour que le
+         premier écran ne s'affiche pas dans une police de système puis ne
+         saute. `crossorigin` est requis même en même origine pour les
+         polices, sinon le préchargement est ignoré. -->
+    <link
+      rel="preload"
+      href="/fonts/anton-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/archivo-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <style>
+      /* Fond posé avant le chargement du CSS applicatif : sans cela, un
+         flash blanc précède l'émail sur une connexion lente. */
+      html {
+        background: #f2efe8;
+      }
+      /* Écran d'amorçage. Il tient dans le HTML parce qu'il doit s'afficher
+         avant que le moindre script Angular soit évalué — et sur 3G, cela
+         peut représenter plusieurs secondes. */
+      .amorcage {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        gap: 14px;
+        justify-items: center;
+        background: #0b6b5e;
+        color: #f7fbfa;
+        font-family: system-ui, sans-serif;
+      }
+      .amorcage__barres {
+        display: flex;
+        gap: 6px;
+      }
+      .amorcage__barres i {
+        width: 7px;
+        height: 30px;
+        background: #f7fbfa;
+        opacity: 0.35;
+        animation: amorcage-pouls 1.1s ease-in-out infinite;
+      }
+      .amorcage__barres i:nth-child(2) {
+        animation-delay: 0.14s;
+      }
+      .amorcage__barres i:nth-child(3) {
+        animation-delay: 0.28s;
+      }
+      .amorcage__barres i:nth-child(4) {
+        animation-delay: 0.42s;
+      }
+      @keyframes amorcage-pouls {
+        0%,
+        100% {
+          opacity: 0.25;
+          transform: scaleY(0.6);
+        }
+        50% {
+          opacity: 1;
+          transform: scaleY(1);
+        }
+      }
+      .amorcage__mot {
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        opacity: 0.8;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .amorcage__barres i {
+          animation: none;
+          opacity: 0.6;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <app-racine>
+      <!-- Remplacé dès qu'Angular prend la main. -->
+      <div class="amorcage">
+        <div class="amorcage__barres" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+        </div>
+        <p class="amorcage__mot">Ouverture de la boutique</p>
+      </div>
+    </app-racine>
+    <noscript>
+      <div
+        style="
+          padding: 24px;
+          font-family: system-ui, sans-serif;
+          max-width: 34rem;
+          margin: 0 auto;
+        "
+      >
+        <h1 style="font-size: 20px">JavaScript est désactivé</h1>
+        <p>
+          Cette boutique a besoin de JavaScript pour afficher le catalogue et
+          traiter les paiements. Activez-le dans les réglages de votre
+          navigateur, puis rechargez la page.
+        </p>
+      </div>
+    </noscript>
+  </body>
 </html>

@@ -1,0 +1,41 @@
+.tampon {
+  display: inline-block;
+  font-size: var(--t-micro);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 3px var(--e2);
+  border: 2px solid currentColor;
+  border-radius: var(--rayon);
+  /* L'inclinaison fait le tampon. Très légère : au-delà, le texte
+     devient pénible à lire et le procédé se voit. */
+  transform: rotate(-1.4deg);
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.tampon--petit {
+  font-size: 0.625rem;
+  padding: 1px 5px;
+  border-width: 1px;
+}
+
+.tampon--succes {
+  color: var(--succes);
+  background: var(--succes-voile);
+}
+
+.tampon--echec {
+  color: var(--echec);
+  background: var(--echec-voile);
+}
+
+.tampon--attente {
+  color: var(--alerte);
+  background: var(--alerte-voile);
+}
+
+.tampon--neutre {
+  color: var(--encre-sombre);
+  background: var(--encre-voile);
+}

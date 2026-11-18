@@ -1,0 +1,41 @@
+<section class="perdu" [class.perdu--admin]="cas() === 'admin'">
+  <!-- Le code est posé en chiffres peints : dans ce monde, le grand nombre
+       fait partie du panneau, il n'est pas une illustration décorative. -->
+  <p class="perdu__code peint" aria-hidden="true">
+    {{ cas() === 'refus' ? '403' : '404' }}
+  </p>
+
+  <h1 class="perdu__titre">{{ titre() }}</h1>
+
+  <p class="perdu__explication">{{ explication() }}</p>
+
+  <p class="perdu__chemin">
+    <span class="pochoir">Adresse demandée</span>
+    <code>{{ chemin }}</code>
+  </p>
+
+  <nav class="perdu__sorties" aria-label="Où aller maintenant">
+    @switch (cas()) {
+      @case ('admin') {
+        <a class="perdu__principal" routerLink="/admin/tableau-de-bord">
+          Revenir au tableau de bord
+        </a>
+        <a class="perdu__secondaire" routerLink="/">Voir la boutique</a>
+      }
+      @case ('refus') {
+        <a class="perdu__principal" routerLink="/">Revenir à la boutique</a>
+        @if (connecte()) {
+          <a class="perdu__secondaire" routerLink="/mes-commandes">Mes commandes</a>
+        }
+      }
+      @default {
+        <a class="perdu__principal" routerLink="/catalogue">Parcourir le catalogue</a>
+        @if (connecte()) {
+          <a class="perdu__secondaire" routerLink="/mes-commandes">Mes commandes</a>
+        } @else {
+          <a class="perdu__secondaire" routerLink="/connexion">Se connecter</a>
+        }
+      }
+    }
+  </nav>
+</section>

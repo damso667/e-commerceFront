@@ -1,0 +1,223 @@
+.car {
+  position: relative;
+  background: var(--fond-doux);
+  border-radius: var(--rayon-grand);
+  overflow: hidden;
+}
+
+/* Défilement natif : le geste tactile, l'inertie et le rappel viennent du
+   système. La barre est masquée, pas le défilement lui-même. */
+.car__piste {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.car__piste::-webkit-scrollbar {
+  display: none;
+}
+
+.car__diapo {
+  position: relative;
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  /* Ratio fixe : la hauteur ne saute pas d'une diapositive à l'autre, et
+     l'espace est réservé avant l'arrivée de la photo. */
+  aspect-ratio: 4 / 5;
+  display: grid;
+  isolation: isolate;
+}
+
+@media (min-width: 620px) {
+  .car__diapo {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (min-width: 1100px) {
+  .car__diapo {
+    aspect-ratio: 21 / 8;
+  }
+}
+
+.car__image,
+.car__typo {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* ---------- Compositions typographiques ----------
+   Tant qu'aucune photo n'est fournie. Trois variantes pour que deux
+   diapositives voisines ne se ressemblent pas, toutes construites sur la
+   seule couleur de marque. */
+.car__typo[data-variante='0'] {
+  background: var(--encre);
+}
+
+.car__typo[data-variante='1'] {
+  background: var(--encre-sombre);
+  /* Bandes larges : une texture, pas un motif décoratif. */
+  background-image: repeating-linear-gradient(
+    115deg,
+    transparent 0 64px,
+    rgb(255 255 255 / 0.045) 64px 128px
+  );
+}
+
+.car__typo[data-variante='2'] {
+  background: var(--texte);
+  background-image: radial-gradient(
+    circle at 78% 28%,
+    color-mix(in srgb, var(--marque) 68%, transparent) 0%,
+    transparent 58%
+  );
+}
+
+/* ---------- Le bloc de texte ---------- */
+
+/* Voile pleine largeur : garantit le contraste du texte quelle que soit la
+   photo déposée plus tard. Sans lui, un cliché clair rendrait le titre
+   illisible ; limité en largeur, il laisserait une arête verticale. */
+.car__voile {
+  grid-area: 1 / 1;
+  z-index: 1;
+  align-self: end;
+  width: 100%;
+  padding: var(--e6) var(--e5) var(--e7);
+  background: linear-gradient(
+    to top,
+    rgb(12 12 11 / 0.74) 0%,
+    rgb(12 12 11 / 0.42) 46%,
+    transparent 100%
+  );
+}
+
+@media (min-width: 760px) {
+  .car__voile {
+    padding: var(--e8);
+  }
+}
+
+.car__bloc {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--e4);
+  color: var(--texte-inverse);
+  /* Le texte, lui, reste à une largeur lisible. */
+  max-width: 44rem;
+}
+
+/* Les commandes occupent le coin bas droit : sur grand écran, on réserve
+   leur place pour que le bouton d'action ne passe pas dessous. */
+@media (min-width: 620px) {
+  .car__bloc {
+    padding-right: 260px;
+  }
+}
+
+.car__titre {
+  color: inherit;
+  max-width: 20ch;
+}
+
+.car__texte {
+  font-size: var(--t-lecture);
+  max-width: 46ch;
+  color: rgb(255 255 255 / 0.88);
+}
+
+.car__action {
+  background: var(--fond);
+  color: var(--texte);
+  margin-top: var(--e1);
+}
+
+.car__action:hover {
+  background: var(--fond-creux);
+}
+
+/* ---------- Commandes ---------- */
+
+.car__commandes {
+  position: absolute;
+  z-index: 2;
+  right: var(--e4);
+  bottom: var(--e4);
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  padding: var(--e1);
+  background: rgb(255 255 255 / 0.92);
+  border-radius: var(--rayon-rond);
+  box-shadow: var(--ombre-douce);
+}
+
+@media (min-width: 760px) {
+  .car__commandes {
+    right: var(--e6);
+    bottom: var(--e6);
+  }
+}
+
+.car__fleche,
+.car__pause {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--rayon-rond);
+  color: var(--texte);
+  transition: background var(--duree-courte) var(--sortie);
+}
+
+.car__fleche:hover,
+.car__pause:hover {
+  background: var(--fond-creux);
+}
+
+.car__fleche svg,
+.car__pause svg {
+  width: 20px;
+  height: 20px;
+}
+
+.car__puces {
+  display: flex;
+  align-items: center;
+  gap: var(--e1);
+  padding-inline: var(--e1);
+}
+
+/* La puce visible fait 8 px, mais la cible tactile en fait 32 : un point
+   de 8 px est impossible à viser au pouce. */
+.car__puce {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--rayon-rond);
+}
+
+.car__puce::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--rayon-rond);
+  background: var(--trait-fort);
+  transition:
+    background var(--duree-courte) var(--sortie),
+    width var(--duree-courte) var(--sortie);
+}
+
+.car__puce.est-active::after {
+  background: var(--encre);
+  width: 20px;
+}

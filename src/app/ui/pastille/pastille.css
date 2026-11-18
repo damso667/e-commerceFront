@@ -1,0 +1,49 @@
+.pastille {
+  position: relative;
+  aspect-ratio: var(--ratio, 1);
+  background: var(--encre-voile);
+  border: var(--filet);
+  border-radius: var(--rayon-pastille);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  contain: paint;
+}
+
+/* Variante sans bordure, quand la pastille est posée sur un aplat
+   d'encre : un filet clair y ferait un cadre parasite. */
+.pastille--posee {
+  border-color: color-mix(in srgb, var(--texte-sur-encre) 30%, transparent);
+  background: color-mix(in srgb, var(--texte-sur-encre) 14%, transparent);
+}
+
+.pastille__mono {
+  font-family: var(--police-peinte);
+  text-transform: uppercase;
+  color: var(--encre);
+  /* Suit la largeur de la pastille, sans media query. */
+  font-size: clamp(1rem, 34cqw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  opacity: 0.8;
+  user-select: none;
+}
+
+.pastille--posee .pastille__mono {
+  color: var(--texte-sur-encre);
+  opacity: 0.9;
+}
+
+.pastille__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--duree) var(--sortie);
+}
+
+.pastille[data-chargee='true'] .pastille__image {
+  opacity: 1;
+}

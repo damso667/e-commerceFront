@@ -1,0 +1,54 @@
+<div class="sq" role="status" aria-busy="true">
+  <span class="lecteur-seul">{{ annonce() }}</span>
+
+  @switch (forme()) {
+    @case ('tarif') {
+      @for (ligne of lignes(); track $index) {
+        <div class="sq__tarif">
+          <div class="sq__bloc sq__vignette"></div>
+          <div class="sq__colonne">
+            <div class="sq__bloc sq__titre"></div>
+            <div class="sq__bloc sq__legende"></div>
+          </div>
+          <div class="sq__bloc sq__montant"></div>
+        </div>
+      }
+    }
+    @case ('grille') {
+      <div class="sq__grille">
+        @for (carte of lignes(); track $index) {
+          <div class="sq__carte">
+            <div class="sq__bloc sq__carre"></div>
+            <div class="sq__bloc sq__titre"></div>
+            <div class="sq__bloc sq__montant sq__montant--carte"></div>
+          </div>
+        }
+      </div>
+    }
+    @case ('tableau') {
+      @for (ligne of lignes(); track $index) {
+        <div class="sq__rangee">
+          <div class="sq__bloc" style="flex:2"></div>
+          <div class="sq__bloc" style="flex:1"></div>
+          <div class="sq__bloc" style="flex:1"></div>
+          <div class="sq__bloc" style="flex:0 0 72px"></div>
+        </div>
+      }
+    }
+    @case ('chiffres') {
+      <div class="sq__chiffres">
+        @for (bloc of lignes(); track $index) {
+          <div class="sq__tuile">
+            <div class="sq__bloc sq__legende"></div>
+            <div class="sq__bloc sq__gros"></div>
+          </div>
+        }
+      </div>
+    }
+    @default {
+      @for (ligne of lignes(); track $index) {
+        <div class="sq__bloc sq__texte"></div>
+      }
+    }
+  }
+</div>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 210" role="img" aria-labelledby="t">
+  <title id="t">QALF SHOP — symbole</title>
+  <!-- Le symbole seul, cadre carre : sert d'avatar, de favicon et de base
+       aux icones de l'application installee. Le logotype complet est dans
+       logo.svg, trop large pour un cadre carre. -->
+  <g fill="none" stroke="#0b6b5e" stroke-linecap="square">
+    <circle cx="102" cy="105" r="64" stroke-width="22"/>
+    <path d="M122 125 165 168" stroke-width="22"/>
+  </g>
+</svg>

@@ -1,0 +1,105 @@
+.perdu {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: var(--e8) var(--e4) var(--e9);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--e4);
+}
+
+/* Le code en chiffres peints : grand, mais plafonné pour rester un élément
+   de la page et non une affiche. */
+.perdu__code {
+  font-size: clamp(4.5rem, 22vw, 9rem);
+  color: var(--encre);
+  opacity: 0.16;
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+  margin-bottom: calc(var(--e4) * -1);
+}
+
+.perdu__titre {
+  font-family: var(--police-peinte);
+  text-transform: uppercase;
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  /* Évite le mot orphelin sur la dernière ligne du titre. */
+  text-wrap: balance;
+}
+
+.perdu__explication {
+  color: var(--texte-doux);
+  max-width: 54ch;
+}
+
+.perdu__chemin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e1);
+  padding: var(--e3) var(--e4);
+  background: var(--email-pur);
+  border: var(--filet);
+  border-radius: var(--rayon);
+  width: 100%;
+  min-width: 0;
+}
+
+.perdu__chemin code {
+  /* Monospace ici parce qu'il s'agit d'une donnée technique exacte — une
+     adresse — et non d'un effet « technique ». */
+  font-family: ui-monospace, 'Cascadia Mono', Menlo, monospace;
+  font-size: var(--t-petit);
+  color: var(--encre-sombre);
+  overflow-wrap: anywhere;
+}
+
+.perdu__sorties {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e4);
+  margin-top: var(--e2);
+}
+
+.perdu__principal {
+  background: var(--encre);
+  color: var(--texte-sur-encre);
+  padding: var(--e3) var(--e5);
+  text-decoration: none;
+  font-size: var(--t-petit);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: var(--rayon);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: background var(--duree-courte) var(--sortie);
+}
+
+.perdu__principal:hover {
+  background: var(--encre-sombre);
+}
+
+.perdu__secondaire {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  text-underline-offset: 0.2em;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.perdu__secondaire:hover {
+  color: var(--encre);
+}
+
+/* Dans le back-office, le chiffre géant détonnerait sur un fond de
+   travail : on le réduit au lieu de l'effacer. */
+.perdu--admin .perdu__code {
+  font-size: clamp(3rem, 10vw, 4.5rem);
+  opacity: 0.12;
+}

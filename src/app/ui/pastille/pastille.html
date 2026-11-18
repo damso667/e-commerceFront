@@ -1,0 +1,21 @@
+<div
+  class="pastille"
+  [style.--ratio]="ratio()"
+  [attr.data-chargee]="chargee()"
+  [class.pastille--posee]="posee()"
+>
+  <span class="pastille__mono" aria-hidden="true">{{ monogramme() }}</span>
+
+  @if (src() && !echec()) {
+    <img
+      class="pastille__image"
+      [src]="src()"
+      [alt]="alt()"
+      [attr.loading]="prioritaire() ? 'eager' : 'lazy'"
+      [attr.fetchpriority]="prioritaire() ? 'high' : 'auto'"
+      decoding="async"
+      (load)="chargee.set(true)"
+      (error)="echec.set(true)"
+    />
+  }
+</div>

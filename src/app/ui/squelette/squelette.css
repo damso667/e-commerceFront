@@ -1,0 +1,112 @@
+.sq {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e3);
+}
+
+.sq__bloc {
+  background: var(--email-creux);
+  border-radius: var(--rayon);
+  /* Retard de 260 ms : une réponse rapide ne déclenche aucun
+     clignotement visible. */
+  animation: pouls 1.4s 260ms ease-in-out infinite;
+}
+
+/* Ligne de tarif : vignette, deux lignes de texte, montant à droite.
+   Les hauteurs correspondent au composant réel. */
+.sq__tarif {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  padding: var(--e3) 0;
+  border-bottom: var(--filet);
+}
+
+.sq__vignette {
+  flex: 0 0 48px;
+  height: 48px;
+}
+
+.sq__colonne {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+  min-width: 0;
+}
+
+.sq__titre {
+  height: 13px;
+  width: 62%;
+}
+
+.sq__legende {
+  height: 9px;
+  width: 34%;
+}
+
+.sq__montant {
+  flex: 0 0 92px;
+  height: 26px;
+}
+
+.sq__texte {
+  height: 12px;
+}
+
+.sq__texte:last-child {
+  width: 55%;
+}
+
+.sq__grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--e4);
+}
+
+.sq__carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+}
+
+.sq__carre {
+  aspect-ratio: 1;
+}
+
+.sq__montant--carte {
+  flex: none;
+  height: 22px;
+  width: 70%;
+}
+
+.sq__rangee {
+  display: flex;
+  gap: var(--e3);
+  align-items: center;
+  padding: var(--e3) 0;
+  border-bottom: var(--filet);
+}
+
+.sq__rangee .sq__bloc {
+  height: 13px;
+}
+
+.sq__chiffres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--e4);
+}
+
+.sq__tuile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+  padding: var(--e4);
+  border: var(--filet);
+}
+
+.sq__gros {
+  height: 30px;
+  width: 72%;
+}

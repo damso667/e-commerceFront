@@ -1,0 +1,23 @@
+<div
+  class="alerte"
+  [class]="'alerte--' + ton()"
+  [attr.role]="ton() === 'echec' ? 'alert' : 'status'"
+>
+  <p class="alerte__texte">{{ message() }}</p>
+
+  @if (champs(); as liste) {
+    @if (liste.length) {
+      <ul class="alerte__champs">
+        @for (champ of liste; track champ[0]) {
+          <li><strong>{{ champ[0] }}</strong> : {{ champ[1] }}</li>
+        }
+      </ul>
+    }
+  }
+
+  @if (reessayable()) {
+    <button type="button" class="alerte__action" (click)="reessayer.emit()">
+      Réessayer
+    </button>
+  }
+</div>

@@ -1,0 +1,58 @@
+.alerte {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--e2);
+  padding: var(--e3) var(--e4);
+  /* Filet complet et non une bordure latérale colorée épaisse : celle-ci
+     est le tic visuel du bandeau d'alerte générique. */
+  border: var(--filet);
+  border-radius: var(--rayon);
+  font-size: var(--t-petit);
+}
+
+.alerte--echec {
+  background: var(--echec-voile);
+  border-color: color-mix(in srgb, var(--echec) 35%, transparent);
+  color: var(--echec);
+}
+
+.alerte--succes {
+  background: var(--succes-voile);
+  border-color: color-mix(in srgb, var(--succes) 32%, transparent);
+  color: var(--succes);
+}
+
+.alerte--attente {
+  background: var(--alerte-voile);
+  border-color: color-mix(in srgb, var(--alerte) 32%, transparent);
+  color: var(--alerte);
+}
+
+.alerte--neutre {
+  background: var(--encre-brume);
+  border-color: var(--encre-voile);
+  color: var(--encre-sombre);
+}
+
+.alerte__texte {
+  font-weight: 500;
+}
+
+.alerte__champs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--t-micro);
+  opacity: 0.9;
+}
+
+.alerte__action {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  font-weight: 600;
+  font-size: var(--t-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  min-height: 32px;
+}

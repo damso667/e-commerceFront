@@ -1,0 +1,32 @@
+<article class="carte" [class.carte--ajoutee]="ajoute()">
+  <a class="carte__lien" [routerLink]="['/article', article().id]">
+    <div class="carte__visuel">
+      <app-pastille
+        [libelle]="article().nom"
+        [src]="article().imageUrl"
+        [prioritaire]="prioritaire()"
+        ratio="4 / 5"
+      />
+    </div>
+
+    <div class="carte__texte">
+      @if (categorie()) {
+        <p class="carte__rayon">{{ categorie() }}</p>
+      }
+      <h3 class="carte__nom">{{ article().nom }}</h3>
+      <app-montant class="carte__prix" [valeur]="article().prix" />
+    </div>
+  </a>
+
+  <!-- Hors du lien : un bouton imbriqué dans une ancre est invalide et
+       casse la navigation au clavier. -->
+  <button
+    type="button"
+    class="carte__ajout"
+    [disabled]="enCours()"
+    [attr.aria-label]="libelleAccessible()"
+    (click)="surAjout($event)"
+  >
+    {{ libelleAjout() }}
+  </button>
+</article>

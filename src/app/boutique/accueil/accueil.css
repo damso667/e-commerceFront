@@ -1,0 +1,70 @@
+.accueil__haut {
+  padding-top: var(--e5);
+}
+
+.accueil__erreur {
+  padding-top: var(--e5);
+}
+
+.accueil__attente {
+  padding-top: var(--e5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--e8);
+}
+
+/* Réserve l'emplacement du carrousel pendant le chargement, au même ratio
+   que lui : sans cela, son arrivée pousserait toute la grille vers le bas. */
+.accueil__squelette-car {
+  aspect-ratio: 4 / 5;
+  border-radius: var(--rayon-grand);
+  background: var(--fond-creux);
+  animation: pouls 1.4s 260ms ease-in-out infinite;
+}
+
+@media (min-width: 620px) {
+  .accueil__squelette-car {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (min-width: 1100px) {
+  .accueil__squelette-car {
+    aspect-ratio: 21 / 8;
+  }
+}
+
+/* ---------- Bande de titre de section ---------- */
+
+.bande {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e4);
+  margin-bottom: var(--e6);
+}
+
+.bande__lien {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  text-decoration: none;
+  white-space: nowrap;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.bande__lien:hover {
+  color: var(--encre);
+  text-decoration: underline;
+}
+
+/* Les rayons qui suivent la sélection sont moins espacés entre eux : la
+   page garde son rythme sans devenir interminable. */
+.section--rayon {
+  padding-block: 0 var(--e9);
+}
+
+.section--rayon:first-of-type {
+  padding-top: var(--e2);
+}

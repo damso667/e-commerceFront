@@ -1,0 +1,192 @@
+<a class="evitement" href="#contenu">Aller au contenu</a>
+
+<header class="tete">
+  <div class="contenu tete__principal">
+    <!-- Menu des rayons, sur petit écran uniquement. -->
+    <button
+      type="button"
+      class="tete__hamburger"
+      [attr.aria-expanded]="menuOuvert()"
+      aria-controls="menu-rayons"
+      [attr.aria-label]="menuOuvert() ? 'Fermer les rayons' : 'Ouvrir les rayons'"
+      (click)="basculerMenu()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        @if (menuOuvert()) {
+          <path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" />
+        } @else {
+          <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" />
+        }
+      </svg>
+    </button>
+
+    <a routerLink="/" class="tete__marque" [attr.aria-label]="'Accueil ' + nom()">
+      @if (logo()) {
+        <!-- Le logo porte déjà le nom de la boutique : l'écrire à côté le
+             doublerait. L'attribut alt le restitue aux lecteurs d'écran. -->
+        <img class="tete__logo" [src]="logo()" [alt]="nom()" />
+      } @else {
+        <span class="tete__mono logotype" aria-hidden="true">{{ monogramme() }}</span>
+        <span class="tete__nom logotype">{{ nom() }}</span>
+      }
+    </a>
+
+    <!-- La recherche, toujours visible : premier geste d'un acheteur qui
+         sait ce qu'il cherche. -->
+    <form class="recherche" role="search" (submit)="lancerRecherche($event)">
+      <label class="lecteur-seul" for="champ-recherche">Rechercher un article</label>
+      <svg class="recherche__loupe" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+        <path d="m16 16 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" />
+      </svg>
+      <input
+        id="champ-recherche"
+        class="recherche__saisie"
+        type="search"
+        name="q"
+        placeholder="Rechercher un article"
+        autocomplete="off"
+        [value]="recherche()"
+        (input)="recherche.set($any($event.target).value)"
+      />
+      <button type="submit" class="recherche__action">Rechercher</button>
+    </form>
+
+    <div class="tete__actions">
+      @if (connecte()) {
+        <div class="tete__compte">
+          <a routerLink="/mes-commandes" class="tete__lien">Mes commandes</a>
+          <button type="button" class="tete__lien" (click)="seDeconnecter()">Déconnexion</button>
+        </div>
+      } @else {
+        <a routerLink="/connexion" class="tete__lien tete__lien--compte">Connexion</a>
+      }
+
+      <!-- Toujours présent, même déconnecté. -->
+      <a
+        class="panier"
+        [routerLink]="cheminPanier()"
+        [queryParams]="parametresPanier()"
+        [attr.aria-label]="libellePanier()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6 7h12l-1.2 11.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8z"
+                fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+          <path d="M9.2 7a2.8 2.8 0 0 1 5.6 0" fill="none" stroke="currentColor"
+                stroke-width="1.7" stroke-linecap="round" />
+        </svg>
+        @if (nombreArticles() > 0) {
+          <span class="panier__compteur montant">{{ nombreArticles() }}</span>
+        }
+      </a>
+    </div>
+  </div>
+
+  <!-- Rayons : barre horizontale sur grand écran, panneau déroulant sur
+       téléphone. -->
+  <nav
+    id="menu-rayons"
+    class="rayons"
+    [class.est-ouvert]="menuOuvert()"
+    aria-label="Rayons"
+  >
+    <div class="contenu rayons__piste">
+      <a routerLink="/catalogue" routerLinkActive="est-actif"
+         [routerLinkActiveOptions]="{ exact: true }" (click)="fermerMenu()">
+        Tout le catalogue
+      </a>
+      @for (rayon of rayons(); track rayon.idCategorie) {
+        <a
+          routerLink="/catalogue"
+          [queryParams]="{ categorie: rayon.idCategorie }"
+          routerLinkActive="est-actif"
+          (click)="fermerMenu()"
+        >
+          {{ rayon.nomCategorie }}
+        </a>
+      }
+      @if (estAdmin()) {
+        <a routerLink="/admin" class="rayons__admin" (click)="fermerMenu()">Back-office</a>
+      }
+    </div>
+  </nav>
+</header>
+
+<!-- Bandeaux d'état : ils n'apparaissent que lorsqu'ils ont quelque chose
+     à dire, et expliquent au lieu de laisser croire à une panne. -->
+@if (horsLigne()) {
+  <p class="bandeau bandeau--hors-ligne" role="status">
+    Vous êtes hors ligne. Le catalogue déjà consulté reste visible ; commander
+    demande une connexion.
+  </p>
+} @else if (serveurSeReveille()) {
+  <p class="bandeau bandeau--reveil" role="status">
+    Le serveur se réveille — cela prend jusqu'à deux minutes la première fois.
+    La page se remplira toute seule.
+  </p>
+}
+
+<main id="contenu" class="corps">
+  <router-outlet />
+</main>
+
+<footer class="pied">
+  <div class="contenu pied__rang">
+    <div class="pied__identite">
+      @if (logo()) {
+        <img class="pied__logo" [src]="logo()" [alt]="nom()" />
+      } @else {
+        <p class="pied__nom logotype">{{ nom() }}</p>
+      }
+      @if (slogan()) {
+        <p class="pied__slogan">{{ slogan() }}</p>
+      }
+      @if (paiementSimule()) {
+        <p class="pied__mention">
+          Mode démonstration : les paiements sont simulés, aucun argent n'est
+          débité.
+        </p>
+      }
+    </div>
+
+    <div class="pied__bloc">
+      <h2 class="pied__titre etiquette">Boutique</h2>
+      <a routerLink="/catalogue">Tout le catalogue</a>
+      @if (connecte()) {
+        <a routerLink="/mes-commandes">Mes commandes</a>
+        <a routerLink="/panier">Mon panier</a>
+      } @else {
+        <a routerLink="/inscription">Créer un compte</a>
+        <a routerLink="/connexion">Se connecter</a>
+      }
+    </div>
+
+    <div class="pied__bloc">
+      <h2 class="pied__titre etiquette">Paiement</h2>
+      <p>MTN Mobile Money</p>
+      <p>Orange Money</p>
+    </div>
+
+    <div class="pied__bloc">
+      <h2 class="pied__titre etiquette">Contact</h2>
+      @if (telephone()) {
+        <a [href]="'tel:' + telephone()">{{ telephone() }}</a>
+      }
+      @if (email()) {
+        <a [href]="'mailto:' + email()">{{ email() }}</a>
+      }
+      @if (adresse()) {
+        <p>{{ adresse() }}</p>
+      }
+      @if (!telephone() && !email() && !adresse()) {
+        <p class="pied__absent">
+          Aucun contact renseigné. L'administrateur peut l'ajouter depuis le
+          back-office.
+        </p>
+      }
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,19 @@
+<div class="vide">
+  <!-- Le filet poché remplace l'illustration : dans ce monde, la structure
+       est dessinée par des traits, pas par une image de carton vide. -->
+  <div class="vide__marque" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
+
+  <h2 class="vide__titre">{{ titre() }}</h2>
+
+  @if (detail()) {
+    <p class="vide__detail">{{ detail() }}</p>
+  }
+
+  @if (action()) {
+    <button type="button" class="vide__action" (click)="agir.emit()">
+      {{ action() }}
+    </button>
+  }
+</div>

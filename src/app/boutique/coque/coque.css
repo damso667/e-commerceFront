@@ -1,0 +1,464 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ============================================================
+   En-tête
+   ============================================================ */
+
+.tete {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--fond);
+  border-bottom: 1px solid var(--trait);
+}
+
+.tete__principal {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    'menu marque actions'
+    'recherche recherche recherche';
+  align-items: center;
+  gap: var(--e3);
+  padding-block: var(--e3);
+}
+
+@media (min-width: 900px) {
+  .tete__principal {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'marque recherche actions';
+    gap: var(--e6);
+    padding-block: var(--e4);
+  }
+}
+
+/* ---------- Marque ---------- */
+
+.tete__marque {
+  grid-area: marque;
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  text-decoration: none;
+  min-width: 0;
+  justify-self: center;
+}
+
+@media (min-width: 900px) {
+  .tete__marque {
+    justify-self: start;
+  }
+}
+
+/* Hauteur imposée, largeur libre : on ne connaît pas le rapport du logo
+   que l'administrateur déposera. `max-width` empêche un logo très large
+   d'écraser la recherche sur petit écran. */
+.tete__logo {
+  height: 30px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+@media (min-width: 900px) {
+  .tete__logo {
+    height: 34px;
+    max-width: 220px;
+  }
+}
+
+.tete__mono {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
+  color: var(--texte-inverse);
+  background: var(--encre);
+  border-radius: var(--rayon);
+}
+
+.tete__nom {
+  font-size: 1.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Hamburger ---------- */
+
+.tete__hamburger {
+  grid-area: menu;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--rayon);
+  color: var(--texte);
+}
+
+.tete__hamburger svg {
+  width: 22px;
+  height: 22px;
+}
+
+@media (min-width: 900px) {
+  .tete__hamburger {
+    display: none;
+  }
+}
+
+/* ---------- Recherche ---------- */
+
+.recherche {
+  grid-area: recherche;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.recherche__loupe {
+  position: absolute;
+  left: var(--e3);
+  width: 18px;
+  height: 18px;
+  color: var(--texte-faible);
+  pointer-events: none;
+}
+
+.recherche__saisie {
+  width: 100%;
+  min-height: 46px;
+  padding: var(--e2) var(--e4) var(--e2) 42px;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-rond);
+  background: var(--fond-doux);
+  font-size: var(--t-base);
+  transition:
+    border-color var(--duree-courte) var(--sortie),
+    background var(--duree-courte) var(--sortie);
+}
+
+.recherche__saisie::placeholder {
+  /* Contraste suffisant : un texte d'invite trop pâle n'est pas lisible
+     en plein jour sur un écran bon marché. */
+  color: var(--texte-faible);
+}
+
+.recherche__saisie:hover {
+  border-color: var(--trait-fort);
+}
+
+.recherche__saisie:focus {
+  outline: none;
+  background: var(--fond);
+  border-color: var(--encre);
+  box-shadow: 0 0 0 3px var(--encre-voile);
+}
+
+/* Le bouton existe pour les lecteurs d'écran et la soumission au clavier ;
+   visuellement la loupe et la touche Entrée suffisent. */
+.recherche__action {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Actions ---------- */
+
+.tete__actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  justify-self: end;
+}
+
+.tete__compte {
+  display: none;
+  align-items: center;
+  gap: var(--e4);
+}
+
+@media (min-width: 900px) {
+  .tete__compte {
+    display: flex;
+  }
+}
+
+.tete__lien {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tete__lien:hover {
+  color: var(--texte);
+  text-decoration: underline;
+}
+
+.tete__lien--compte {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .tete__lien--compte {
+    display: inline-flex;
+  }
+}
+
+/* ---------- Panier ---------- */
+
+.panier {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--rayon);
+  color: var(--texte);
+  text-decoration: none;
+  transition: background var(--duree-courte) var(--sortie);
+}
+
+.panier:hover {
+  background: var(--fond-doux);
+}
+
+.panier svg {
+  width: 23px;
+  height: 23px;
+}
+
+.panier__compteur {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding-inline: 4px;
+  display: grid;
+  place-items: center;
+  background: var(--encre);
+  color: var(--texte-inverse);
+  border-radius: var(--rayon-rond);
+  font-size: 0.625rem;
+  font-weight: 700;
+  border: 2px solid var(--fond);
+}
+
+/* ============================================================
+   Rayons
+   ============================================================ */
+
+.rayons {
+  border-top: 1px solid var(--trait);
+  /* Replié par défaut sur téléphone. L'animation porte sur la hauteur de
+     grille, qui s'anime sans recalcul de mise en page coûteux. */
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duree) var(--sortie);
+}
+
+.rayons.est-ouvert {
+  grid-template-rows: 1fr;
+}
+
+.rayons__piste {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e1);
+  padding-block: 0;
+}
+
+.rayons.est-ouvert .rayons__piste {
+  padding-block: var(--e3);
+}
+
+.rayons__piste a {
+  font-size: var(--t-base);
+  color: var(--texte-doux);
+  text-decoration: none;
+  padding: var(--e3) 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.rayons__piste a:hover {
+  color: var(--texte);
+}
+
+.rayons__piste a.est-actif {
+  color: var(--encre);
+  font-weight: 600;
+}
+
+.rayons__admin {
+  font-weight: 600;
+}
+
+@media (min-width: 900px) {
+  .rayons {
+    grid-template-rows: 1fr;
+  }
+
+  .rayons__piste {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--e6);
+    padding-block: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .rayons.est-ouvert .rayons__piste {
+    padding-block: 0;
+  }
+
+  .rayons__piste::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rayons__piste a {
+    font-size: var(--t-petit);
+    padding: var(--e3) 0;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+  }
+
+  .rayons__piste a.est-actif {
+    border-bottom-color: var(--encre);
+  }
+}
+
+/* ============================================================
+   Bandeaux
+   ============================================================ */
+
+.bandeau {
+  font-size: var(--t-petit);
+  padding: var(--e3) var(--e4);
+  text-align: center;
+}
+
+.bandeau--hors-ligne {
+  background: var(--alerte-voile);
+  color: var(--alerte);
+}
+
+.bandeau--reveil {
+  background: var(--encre-brume);
+  color: var(--encre-sombre);
+}
+
+.corps {
+  flex: 1;
+}
+
+/* ============================================================
+   Pied de page
+   ============================================================ */
+
+.pied {
+  margin-top: var(--e9);
+  border-top: 1px solid var(--trait);
+  background: var(--fond-doux);
+  padding-block: var(--e8);
+}
+
+.pied__rang {
+  display: grid;
+  gap: var(--e7) var(--e6);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 620px) {
+  .pied__rang {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  .pied__rang {
+    grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  }
+}
+
+.pied__identite {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e3);
+}
+
+.pied__nom {
+  font-size: var(--t-grand);
+  color: var(--encre);
+}
+
+.pied__logo {
+  height: 38px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+}
+
+.pied__slogan {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  max-width: 36ch;
+}
+
+.pied__mention {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  max-width: 36ch;
+  padding-top: var(--e2);
+  border-top: 1px solid var(--trait);
+}
+
+.pied__bloc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.pied__titre {
+  margin-bottom: var(--e1);
+  color: var(--texte);
+}
+
+.pied__bloc a {
+  text-decoration: none;
+  color: var(--texte-doux);
+  width: fit-content;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pied__bloc a:hover {
+  color: var(--encre);
+  text-decoration: underline;
+}
+
+.pied__absent {
+  color: var(--texte-faible);
+  font-size: var(--t-micro);
+  max-width: 30ch;
+}
