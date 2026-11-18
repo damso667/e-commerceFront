@@ -226,7 +226,7 @@
                     }
                   </span>
                   <span class="lecteur-seul">{{ a.note }} sur 5</span>
-                  <time class="avis__date" [attr.datetime]="a.dateAvis">{{ a.dateAvis }}</time>
+                  <time class="avis__date" [attr.datetime]="a.dateAvis">{{ dateLisible(a.dateAvis) }}</time>
                 </div>
                 @if (a.commentaire) {
                   <p class="avis__texte mesure">{{ a.commentaire }}</p>

@@ -253,4 +253,17 @@ export class ArticlePage {
   protected etoiles(note: number): boolean[] {
     return [1, 2, 3, 4, 5].map((rang) => rang <= note);
   }
+
+  /**
+   * Date d'un avis. L'API renvoie de l'ISO ; l'afficher tel quel donnait
+   * « 2026-11-18 » au milieu d'une page par ailleurs entièrement en
+   * français.
+   */
+  protected dateLisible(valeur: string): string {
+    const date = new Date(valeur);
+    if (Number.isNaN(date.getTime())) {
+      return valeur;
+    }
+    return date.toLocaleDateString('fr-FR', { dateStyle: 'long' });
+  }
 }

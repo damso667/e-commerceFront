@@ -98,20 +98,19 @@
     background var(--duree-courte) var(--sortie);
 }
 
-/* Non choisi, l'operateur est en retrait : la couleur de marque ne doit pas
-   crier des deux cotes a la fois, sinon rien ne signale le choix fait. */
+/* Non choisi, l'operateur est legerement en retrait. La premiere version
+   le desaturait a 55 % : le carre Orange virait au beige et son mot
+   devenait illisible, ce qui annulait l'interet meme d'afficher la marque.
+   Le jaune MTN, lui, resistait — d'ou un desequilibre entre les deux. La
+   coche porte desormais seule le role de dire lequel est choisi. */
 .operateur app-marque-paiement {
-  opacity: 0.62;
-  filter: saturate(0.55);
-  transition:
-    opacity var(--duree-courte) var(--sortie),
-    filter var(--duree-courte) var(--sortie);
+  opacity: 0.78;
+  transition: opacity var(--duree-courte) var(--sortie);
 }
 
 .operateur:hover app-marque-paiement,
 .operateur.est-choisi app-marque-paiement {
   opacity: 1;
-  filter: none;
 }
 
 /* Le cadre seul ne suffit pas a distinguer deux tuiles deja colorees :
