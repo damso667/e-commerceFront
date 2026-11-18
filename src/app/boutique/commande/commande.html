@@ -1,0 +1,126 @@
+<div class="contenu">
+  <h1 class="titre-section entete">Paiement</h1>
+
+  @if (chargement()) {
+    <app-squelette forme="texte" [nombre]="5" annonce="Chargement de votre commande" />
+  } @else if (vide()) {
+    <app-etat-vide
+      titre="Votre panier est vide"
+      detail="Il n'y a rien à payer. Ajoutez des articles depuis le catalogue."
+    />
+    <p class="commande__retour">
+      <a class="bouton bouton--plein" routerLink="/catalogue">Voir le catalogue</a>
+    </p>
+  } @else {
+    <div class="commande">
+      <section class="paiement" aria-labelledby="titre-paiement">
+        <h2 id="titre-paiement" class="paiement__titre">Payer par mobile money</h2>
+
+        <p class="paiement__intro mesure">
+          Vous recevrez une demande de confirmation sur votre téléphone.
+          Composez le code de votre opérateur pour valider, puis revenez
+          ici — le statut se met à jour tout seul.
+        </p>
+
+        @if (erreur(); as texte) {
+          <app-alerte [message]="texte" ton="echec" [champs]="champsInvalides()" />
+        }
+
+        <form class="formulaire" (submit)="$event.preventDefault(); payer()">
+          <div class="champ">
+            <label class="champ__libelle" for="numero">Numéro mobile money</label>
+            <input
+              id="numero"
+              class="champ__saisie"
+              type="tel"
+              inputmode="numeric"
+              autocomplete="tel-national"
+              placeholder="677 12 34 56"
+              maxlength="15"
+              [value]="numero()"
+              [attr.aria-invalid]="erreurNumero() !== null"
+              [attr.aria-describedby]="erreurNumero() ? 'erreur-numero' : 'aide-numero'"
+              (input)="majNumero($event)"
+              (blur)="touche.set(true)"
+            />
+            @if (erreurNumero(); as message) {
+              <p class="champ__erreur" id="erreur-numero">{{ message }}</p>
+            } @else {
+              <p class="champ__aide" id="aide-numero">
+                9 chiffres, sans l'indicatif. Le compte doit être au même nom
+                que le téléphone.
+              </p>
+            }
+          </div>
+
+          <fieldset class="operateurs">
+            <legend class="champ__libelle">Opérateur</legend>
+
+            @if (fournisseurDeduit(); as deduit) {
+              <p class="operateurs__deduit">
+                Détecté d'après votre numéro : <strong>{{ libelle(deduit) }}</strong>
+              </p>
+            }
+
+            <div class="operateurs__choix">
+              <button
+                type="button"
+                class="operateur"
+                [class.est-choisi]="fournisseur() === 'MTN_MOMO'"
+                [attr.aria-pressed]="fournisseur() === 'MTN_MOMO'"
+                (click)="choisirFournisseur('MTN_MOMO')"
+              >
+                MTN Mobile Money
+              </button>
+              <button
+                type="button"
+                class="operateur"
+                [class.est-choisi]="fournisseur() === 'ORANGE_MONEY'"
+                [attr.aria-pressed]="fournisseur() === 'ORANGE_MONEY'"
+                (click)="choisirFournisseur('ORANGE_MONEY')"
+              >
+                Orange Money
+              </button>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="bouton bouton--plein bouton--large" [disabled]="!peutPayer()">
+            @if (envoiEnCours()) {
+              Envoi de la demande…
+            } @else {
+              Payer <app-montant [valeur]="total()" />
+            }
+          </button>
+
+          <p class="formulaire__note">
+            En validant, votre commande est créée et le stock réservé. Si le
+            paiement échoue, la commande est annulée et le stock rendu.
+          </p>
+        </form>
+      </section>
+
+      <aside class="recap" aria-label="Détail de la commande">
+        <h2 class="recap__titre">Votre commande</h2>
+
+        @if (panier(); as p) {
+          <ul class="recap__lignes">
+            @for (ligne of p.lignes; track ligne.idArticle) {
+              <li class="recap__ligne">
+                <span class="recap__quantite">{{ ligne.quantite }}×</span>
+                <span class="recap__nom">{{ ligne.libelle }}</span>
+                <app-montant class="recap__prix" [valeur]="ligne.sousTotal" [devise]="false" />
+              </li>
+            }
+          </ul>
+        }
+
+        <div class="recap__total">
+          <span>Total</span>
+          <app-montant class="recap__montant" [valeur]="total()" />
+        </div>
+
+        <a class="recap__modifier" routerLink="/panier">Modifier le panier</a>
+      </aside>
+    </div>
+  }
+</div>

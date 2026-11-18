@@ -1,0 +1,100 @@
+<div class="contenu">
+  <header class="entete">
+    <h1 class="titre-section">
+      @if (nomCategorieActive(); as rayon) {
+        {{ rayon }}
+      } @else if (termeRecherche()) {
+        Résultats pour « {{ termeRecherche() }} »
+      } @else {
+        Tout le catalogue
+      }
+    </h1>
+
+    @if (articles()) {
+      <p class="entete__compte" aria-live="polite">
+        {{ resultats().length }}
+        article{{ resultats().length > 1 ? 's' : '' }}
+        @if (filtreActif()) {
+          sur {{ articles()!.length }}
+        }
+      </p>
+    }
+  </header>
+
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" [reessayable]="true" (reessayer)="charger()" />
+  }
+
+  @if (rayons().length) {
+    <div class="filtres">
+      <!-- Les rayons en onglets défilables : sur téléphone, un menu
+           déroulant cacherait ce qui existe. -->
+      <div class="filtres__rayons" role="group" aria-label="Filtrer par rayon">
+        <button
+          type="button"
+          class="puce"
+          [class.est-active]="categorieActive() === null"
+          [attr.aria-pressed]="categorieActive() === null"
+          (click)="filtrerParCategorie(null)"
+        >
+          Tout
+        </button>
+        @for (rayon of rayons(); track rayon.idCategorie) {
+          <button
+            type="button"
+            class="puce"
+            [class.est-active]="categorieActive() === rayon.idCategorie"
+            [attr.aria-pressed]="categorieActive() === rayon.idCategorie"
+            (click)="filtrerParCategorie(rayon.idCategorie)"
+          >
+            {{ rayon.nomCategorie }}
+            @if (comptes().get(rayon.idCategorie); as n) {
+              <span class="puce__compte">{{ n }}</span>
+            }
+          </button>
+        }
+      </div>
+
+      <div class="filtres__tri champ">
+        <label class="lecteur-seul" for="tri">Trier les articles</label>
+        <select id="tri" class="tri__saisie" [value]="tri()" (change)="changerTri($event)">
+          <option value="pertinence">Tri par défaut</option>
+          <option value="prix-croissant">Prix croissant</option>
+          <option value="prix-decroissant">Prix décroissant</option>
+          <option value="nom">Nom (A → Z)</option>
+        </select>
+      </div>
+    </div>
+  }
+
+  @if (articles() === null && !erreur()) {
+    <app-squelette forme="grille" [nombre]="12" annonce="Chargement du catalogue" />
+  } @else if (resultats().length === 0 && articles()) {
+    @if (filtreActif()) {
+      <app-etat-vide
+        titre="Aucun article ne correspond"
+        detail="Essayez un autre mot, ou retirez les filtres pour voir tout le catalogue."
+        action="Voir tout le catalogue"
+        (agir)="viderFiltres()"
+      />
+    } @else {
+      <app-etat-vide
+        titre="Le catalogue est vide"
+        detail="Aucun article n'est en vente pour le moment. Revenez bientôt."
+      />
+    }
+  } @else {
+    <div class="grille-produits">
+      @for (article of resultats(); track article.id; let rang = $index) {
+        <app-carte-article
+          [article]="article"
+          [categorie]="nomRayon(article.categorieId)"
+          [prioritaire]="rang < 4"
+          [enCours]="ajoutEnCours() === article.id"
+          [ajoute]="ajoute() === article.id"
+          (ajouter)="ajouterAuPanier($event)"
+        />
+      }
+    </div>
+  }
+</div>

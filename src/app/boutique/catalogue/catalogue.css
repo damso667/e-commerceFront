@@ -1,0 +1,132 @@
+:host {
+  display: block;
+  padding-block: var(--e6) var(--e9);
+}
+
+.entete {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--e3) var(--e4);
+  margin-bottom: var(--e5);
+}
+
+.entete__compte {
+  font-size: var(--t-petit);
+  color: var(--texte-faible);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Filtres ---------- */
+
+.filtres {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e4);
+  padding-bottom: var(--e5);
+  margin-bottom: var(--e6);
+  border-bottom: 1px solid var(--trait);
+}
+
+@media (min-width: 760px) {
+  .filtres {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--e6);
+  }
+}
+
+/* Onglets défilables : sur téléphone on voit qu'il y a plus de rayons à
+   droite, ce qu'un menu déroulant cacherait. */
+.filtres__rayons {
+  display: flex;
+  gap: var(--e2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* Les puces ne doivent pas être rognées en haut et en bas par la zone
+     défilante. */
+  padding-block: 2px;
+  margin-inline: calc(var(--e4) * -1);
+  padding-inline: var(--e4);
+}
+
+.filtres__rayons::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 760px) {
+  .filtres__rayons {
+    margin-inline: 0;
+    padding-inline: 0;
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
+
+.puce {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e2);
+  min-height: 40px;
+  padding: var(--e2) var(--e4);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-rond);
+  background: var(--fond);
+  font-size: var(--t-petit);
+  font-weight: 500;
+  color: var(--texte-doux);
+  white-space: nowrap;
+  transition:
+    border-color var(--duree-courte) var(--sortie),
+    background var(--duree-courte) var(--sortie),
+    color var(--duree-courte) var(--sortie);
+}
+
+.puce:hover {
+  border-color: var(--trait-fort);
+  color: var(--texte);
+}
+
+.puce.est-active {
+  background: var(--texte);
+  border-color: var(--texte);
+  color: var(--texte-inverse);
+}
+
+.puce__compte {
+  font-size: var(--t-micro);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+}
+
+.puce.est-active .puce__compte {
+  opacity: 0.75;
+}
+
+/* ---------- Tri ---------- */
+
+.filtres__tri {
+  flex-shrink: 0;
+}
+
+.tri__saisie {
+  min-height: 40px;
+  padding: var(--e2) var(--e4);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  background: var(--fond);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  cursor: pointer;
+}
+
+.tri__saisie:hover {
+  border-color: var(--trait-fort);
+}
+
+.tri__saisie:focus {
+  outline: none;
+  border-color: var(--encre);
+  box-shadow: 0 0 0 3px var(--encre-voile);
+}

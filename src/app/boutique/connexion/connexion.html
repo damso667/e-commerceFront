@@ -1,0 +1,52 @@
+<div class="contenu formulaire-page">
+  <div class="carte-form">
+    <h1 class="titre-section">Connexion</h1>
+    <p class="carte-form__intro">
+      Connectez-vous pour commander sur {{ nom() }}.
+    </p>
+
+    @if (erreur(); as texte) {
+      <app-alerte [message]="texte" ton="echec" />
+    }
+
+    <form class="form" (submit)="$event.preventDefault(); soumettre()">
+      <div class="champ">
+        <label class="champ__libelle" for="email">Adresse email</label>
+        <input
+          id="email"
+          class="champ__saisie"
+          type="email"
+          autocomplete="email"
+          inputmode="email"
+          required
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+        />
+      </div>
+
+      <div class="champ">
+        <label class="champ__libelle" for="mdp">Mot de passe</label>
+        <input
+          id="mdp"
+          class="champ__saisie"
+          type="password"
+          autocomplete="current-password"
+          required
+          [value]="motDePasse()"
+          (input)="motDePasse.set($any($event.target).value)"
+        />
+      </div>
+
+      <button type="submit" class="bouton bouton--plein bouton--large" [disabled]="!peutEnvoyer()">
+        {{ envoi() ? 'Connexion…' : 'Se connecter' }}
+      </button>
+    </form>
+
+    <p class="carte-form__bas">
+      Pas encore de compte ?
+      <a [routerLink]="lienInscription()" [queryParams]="parametresInscription()">
+        Créer un compte
+      </a>
+    </p>
+  </div>
+</div>

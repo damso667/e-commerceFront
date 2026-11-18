@@ -1,0 +1,137 @@
+<div class="contenu suivi">
+  @if (erreur(); as texte) {
+    <app-alerte class="suivi__alerte" [message]="texte" ton="echec" />
+  }
+
+  @if (paiement(); as p) {
+    <!-- ---------- En attente de validation ---------- -->
+    @if (enAttente()) {
+      <section class="etat etat--attente" aria-live="polite">
+        <div class="onde" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+
+        <h1 class="titre-section">Validez sur votre téléphone</h1>
+
+        <p class="etat__texte mesure">
+          Une demande de <strong>{{ libelleFournisseur() }}</strong> a été
+          envoyée au {{ p.numeroPayeur }}. Composez le code de confirmation
+          de votre opérateur pour valider le paiement de
+          <app-montant [valeur]="p.montant" />.
+        </p>
+
+        <p class="etat__attente">
+          En attente depuis {{ attenteLisible() }}
+        </p>
+
+        <p class="etat__note mesure">
+          Ne fermez pas cette page : le statut se met à jour tout seul. Si
+          vous la fermez, vous retrouverez la commande dans
+          <a routerLink="/mes-commandes">vos commandes</a>.
+        </p>
+      </section>
+    }
+
+    <!-- ---------- Paiement réussi ---------- -->
+    @if (reussi()) {
+      <section class="etat etat--succes">
+        <div class="marque marque--succes" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor"
+                  stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+
+        <h1 class="titre-section">Paiement confirmé</h1>
+
+        <p class="etat__texte mesure">
+          Votre commande nº {{ p.idCommande }} est réglée. La boutique la
+          prépare et vous contactera pour la livraison.
+        </p>
+
+        <app-montant class="etat__montant" [valeur]="p.montant" />
+
+        <div class="etat__actions">
+          <a class="bouton bouton--plein" routerLink="/mes-commandes">Voir mes commandes</a>
+          <a class="bouton bouton--contour" routerLink="/catalogue">Continuer mes achats</a>
+        </div>
+      </section>
+    }
+
+    <!-- ---------- Paiement échoué ---------- -->
+    @if (echoue()) {
+      <section class="etat etat--echec">
+        <div class="marque marque--echec" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M7 7l10 10M17 7 7 17" fill="none" stroke="currentColor"
+                  stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+        </div>
+
+        <h1 class="titre-section">Le paiement n'a pas abouti</h1>
+
+        @if (conseil(); as texte) {
+          <p class="etat__texte mesure">{{ texte }}</p>
+        }
+
+        <p class="etat__rassure mesure">
+          Aucun montant n'a été débité, et la commande a été annulée : les
+          articles sont retournés en stock.
+        </p>
+
+        <div class="etat__actions">
+          <button
+            type="button"
+            class="bouton bouton--plein"
+            [disabled]="nouvelleTentative()"
+            (click)="relancer()"
+          >
+            {{ nouvelleTentative() ? 'Envoi…' : 'Relancer le paiement' }}
+          </button>
+          <a class="bouton bouton--contour" routerLink="/catalogue">Retour au catalogue</a>
+        </div>
+      </section>
+    }
+
+    <!-- ---------- Détail, toujours disponible ---------- -->
+    <section class="details" aria-label="Détail du paiement">
+      <h2 class="details__titre etiquette">Détail</h2>
+      <dl class="details__liste">
+        <div class="details__ligne">
+          <dt>Statut</dt>
+          <dd><app-tampon [statutPaiement]="p.statut" /></dd>
+        </div>
+        <div class="details__ligne">
+          <dt>Référence</dt>
+          <dd><code>{{ p.reference }}</code></dd>
+        </div>
+        <div class="details__ligne">
+          <dt>Opérateur</dt>
+          <dd>{{ libelleFournisseur() }}</dd>
+        </div>
+        <div class="details__ligne">
+          <dt>Numéro</dt>
+          <dd>{{ p.numeroPayeur }}</dd>
+        </div>
+        <div class="details__ligne">
+          <dt>Montant</dt>
+          <dd><app-montant [valeur]="p.montant" /></dd>
+        </div>
+        @if (p.tentative > 1) {
+          <div class="details__ligne">
+            <dt>Tentative</dt>
+            <dd>nº {{ p.tentative }}</dd>
+          </div>
+        }
+      </dl>
+    </section>
+  } @else if (!erreur()) {
+    <section class="etat etat--attente">
+      <div class="onde" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <h1 class="titre-section">Envoi de la demande</h1>
+      <p class="etat__texte mesure">Un instant, la demande part vers l'opérateur.</p>
+    </section>
+  }
+</div>

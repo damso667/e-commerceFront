@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  padding-block: var(--e8) var(--e9);
+}
+
+.formulaire-page {
+  display: flex;
+  justify-content: center;
+}
+
+.carte-form {
+  width: 100%;
+  max-width: 26rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e4);
+}
+
+.carte-form__intro {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e4);
+  margin-top: var(--e2);
+}
+
+.carte-form__bas {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  text-align: center;
+  padding-top: var(--e4);
+  border-top: 1px solid var(--trait);
+}
+
+.carte-form__bas a {
+  font-weight: 600;
+  color: var(--encre);
+}

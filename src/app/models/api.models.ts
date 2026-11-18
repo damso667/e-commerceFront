@@ -96,6 +96,9 @@ export interface Article {
   prix: number;
   imageUrl: string | null;
   categorieId: number;
+  nomCategorie: string | null;
+  /** Quantité restante. 0 = rupture. */
+  stock: number | null;
 }
 
 /** Vue admin d'un article (`ArticleResponseDto`). */

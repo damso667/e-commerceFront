@@ -1,0 +1,279 @@
+:host {
+  display: block;
+  padding-block: var(--e6) var(--e9);
+}
+
+.fiche__alerte {
+  display: block;
+  margin-bottom: var(--e5);
+}
+
+/* ---------- Mise en page de la fiche ---------- */
+
+.fiche {
+  display: grid;
+  gap: var(--e6);
+  align-items: start;
+}
+
+@media (min-width: 820px) {
+  .fiche {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--e8);
+  }
+
+  /* Le visuel suit le défilement : sur une fiche longue, le produit reste
+     sous les yeux pendant la lecture des caractéristiques. */
+  .fiche__visuel {
+    position: sticky;
+    top: calc(var(--tete-h) + var(--e4));
+  }
+}
+
+.fiche__visuel--vide {
+  aspect-ratio: 4 / 5;
+  background: var(--fond-creux);
+  border-radius: var(--rayon);
+  animation: pouls 1.4s 260ms ease-in-out infinite;
+}
+
+.fiche__infos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e3);
+}
+
+.fiche__rayon {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  text-decoration: none;
+  width: fit-content;
+}
+
+.fiche__rayon:hover {
+  color: var(--encre);
+  text-decoration: underline;
+}
+
+.fiche__nom {
+  margin-top: var(--e1);
+}
+
+.fiche__prix {
+  font-size: 1.75rem;
+  color: var(--texte);
+  margin-block: var(--e2);
+}
+
+.fiche__description {
+  color: var(--texte-doux);
+  line-height: 1.65;
+}
+
+/* ---------- Note et étoiles ---------- */
+
+.fiche__note {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.etoiles {
+  display: inline-flex;
+  gap: 1px;
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.etoile {
+  color: var(--trait-fort);
+}
+
+.etoile.est-pleine {
+  color: #c08a24;
+}
+
+.fiche__note-chiffre {
+  font-weight: 600;
+  color: var(--texte);
+  font-variant-numeric: tabular-nums;
+}
+
+.fiche__note-nb {
+  color: var(--texte-faible);
+}
+
+/* ---------- Stock ---------- */
+
+.fiche__stock {
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--succes);
+}
+
+.fiche__stock.est-faible {
+  color: var(--alerte);
+}
+
+.fiche__stock.est-rupture {
+  color: var(--echec);
+}
+
+/* ---------- Achat ---------- */
+
+.achat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e3);
+  margin-top: var(--e3);
+}
+
+.quantite {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  overflow: hidden;
+}
+
+.quantite__bouton {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  font-size: 1.125rem;
+  color: var(--texte);
+  transition: background var(--duree-courte) var(--sortie);
+}
+
+.quantite__bouton:hover:not(:disabled) {
+  background: var(--fond-doux);
+}
+
+.quantite__bouton:disabled {
+  color: var(--texte-faible);
+  cursor: not-allowed;
+}
+
+.quantite__valeur {
+  min-width: 44px;
+  text-align: center;
+  font-size: var(--t-lecture);
+}
+
+.achat__action {
+  flex: 1;
+  min-width: 200px;
+}
+
+.fiche__confirmation {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--e2);
+  margin-top: var(--e3);
+}
+
+.fiche__vers-panier {
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--encre);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.fiche__indispo {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  padding: var(--e4);
+  background: var(--fond-doux);
+  border-radius: var(--rayon);
+  margin-top: var(--e2);
+}
+
+/* ---------- Avis ---------- */
+
+.avis {
+  margin-top: var(--e9);
+  padding-top: var(--e7);
+  border-top: 1px solid var(--trait);
+}
+
+.avis__titre {
+  margin-bottom: var(--e5);
+}
+
+.avis__vide {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  max-width: 54ch;
+}
+
+.avis__liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e5);
+}
+
+.avis__element {
+  padding-bottom: var(--e5);
+  border-bottom: 1px solid var(--trait);
+}
+
+.avis__element:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.avis__tete {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--e3);
+  margin-bottom: var(--e2);
+}
+
+.avis__auteur {
+  font-weight: 600;
+  font-size: var(--t-petit);
+}
+
+.avis__date {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  margin-left: auto;
+}
+
+.avis__texte {
+  color: var(--texte-doux);
+  font-size: var(--t-petit);
+  line-height: 1.6;
+}
+
+/* ---------- Similaires ---------- */
+
+.similaires {
+  margin-top: var(--e9);
+}
+
+.similaires .titre-section {
+  margin-bottom: var(--e6);
+}
+
+/* ---------- Article retiré ---------- */
+
+.absent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--e4);
+  padding-block: var(--e9);
+  max-width: 44ch;
+}
+
+.absent__texte {
+  color: var(--texte-doux);
+}

@@ -1,0 +1,183 @@
+:host {
+  display: block;
+  padding-block: var(--e7) var(--e9);
+}
+
+.suivi {
+  max-width: 44rem;
+}
+
+.suivi__alerte {
+  display: block;
+  margin-bottom: var(--e5);
+}
+
+/* ---------- État ---------- */
+
+.etat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--e4);
+  padding-bottom: var(--e8);
+}
+
+.etat__texte {
+  color: var(--texte-doux);
+  line-height: 1.65;
+}
+
+.etat__attente {
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--encre);
+  font-variant-numeric: tabular-nums;
+}
+
+.etat__note {
+  font-size: var(--t-petit);
+  color: var(--texte-faible);
+  padding: var(--e4);
+  background: var(--fond-doux);
+  border-radius: var(--rayon);
+}
+
+.etat__rassure {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  padding: var(--e4);
+  background: var(--succes-voile);
+  border-radius: var(--rayon);
+}
+
+.etat__montant {
+  font-size: 2rem;
+  color: var(--succes);
+}
+
+.etat__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e3);
+  margin-top: var(--e2);
+}
+
+/* ---------- Onde d'attente ----------
+   Trois barres qui pulsent : le seul mouvement de l'écran, et il dit
+   quelque chose — la demande est en vol. */
+.onde {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 38px;
+}
+
+.onde span {
+  width: 8px;
+  height: 100%;
+  background: var(--encre);
+  border-radius: 2px;
+  opacity: 0.3;
+  animation: onde-pouls 1.2s ease-in-out infinite;
+}
+
+.onde span:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.onde span:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+@keyframes onde-pouls {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scaleY(0.45);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onde span {
+    animation: none;
+    opacity: 0.55;
+    transform: scaleY(0.7);
+  }
+}
+
+/* ---------- Marque de résultat ---------- */
+
+.marque {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--rayon-rond);
+}
+
+.marque svg {
+  width: 30px;
+  height: 30px;
+}
+
+.marque--succes {
+  background: var(--succes-voile);
+  color: var(--succes);
+}
+
+.marque--echec {
+  background: var(--echec-voile);
+  color: var(--echec);
+}
+
+/* ---------- Détail ---------- */
+
+.details {
+  padding-top: var(--e6);
+  border-top: 1px solid var(--trait);
+}
+
+.details__titre {
+  margin-bottom: var(--e4);
+}
+
+.details__liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e3);
+}
+
+.details__ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e4);
+  font-size: var(--t-petit);
+  padding-bottom: var(--e3);
+  border-bottom: 1px solid var(--trait);
+}
+
+.details__ligne:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.details__ligne dt {
+  color: var(--texte-faible);
+}
+
+.details__ligne dd {
+  text-align: right;
+  font-weight: 500;
+}
+
+.details__ligne code {
+  font-family: ui-monospace, 'Cascadia Mono', Menlo, monospace;
+  font-size: var(--t-micro);
+  color: var(--texte-doux);
+  overflow-wrap: anywhere;
+}

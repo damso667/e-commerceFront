@@ -19,6 +19,14 @@ export class CatalogueService {
     return this.api.get<Article[]>('/api/personne/Allarticle');
   }
 
+  /**
+   * Un article precis. Evite de telecharger tout le catalogue pour
+   * afficher une fiche.
+   */
+  article(idArticle: number): Observable<Article> {
+    return this.api.get<Article>(`/api/personne/article/${idArticle}`);
+  }
+
   articlesParCategorie(idCategorie: number): Observable<Article[]> {
     return this.api.get<Article[]>(`/api/personne/articleParCategorie/${idCategorie}`);
   }

@@ -6,6 +6,12 @@
          l'accessibilité pour qui a besoin d'agrandir. -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <!-- Indispensable : sans cette base, les chemins relatifs des styles et
+         des scripts sont resolus par rapport a la route courante, et toute
+         adresse imbriquee ouverte directement (/article/3, /admin/clients)
+         ne charge plus l'application. -->
+    <base href="/" />
+
     <!-- Titre, description, couleur de thème, manifeste et icône sont posés
          au démarrage par ParametresService depuis l'API : la marque vient de
          la base, jamais du build. Les valeurs ci-dessous ne servent que le

@@ -1,0 +1,175 @@
+<div class="contenu">
+  @if (introuvable()) {
+    <div class="absent">
+      <h1 class="titre-section">Cet article n'existe plus</h1>
+      <p class="absent__texte">
+        Il a peut-être été retiré de la vente. Le reste du catalogue est
+        toujours là.
+      </p>
+      <a class="bouton bouton--plein" routerLink="/catalogue">Voir le catalogue</a>
+    </div>
+  } @else {
+    @if (erreur(); as texte) {
+      <app-alerte class="fiche__alerte" [message]="texte" ton="echec" />
+    }
+
+    @if (article(); as a) {
+      <article class="fiche">
+        <div class="fiche__visuel">
+          <app-pastille
+            [libelle]="a.nom"
+            [src]="a.imageUrl"
+            [prioritaire]="true"
+            ratio="4 / 5"
+          />
+        </div>
+
+        <div class="fiche__infos">
+          @if (a.nomCategorie) {
+            <a
+              class="fiche__rayon"
+              routerLink="/catalogue"
+              [queryParams]="{ categorie: a.categorieId }"
+            >
+              {{ a.nomCategorie }}
+            </a>
+          }
+
+          <h1 class="fiche__nom titre-section">{{ a.nom }}</h1>
+
+          @if (noteMoyenne(); as note) {
+            <p class="fiche__note">
+              <span class="etoiles" aria-hidden="true">
+                @for (pleine of etoiles(note); track $index) {
+                  <span class="etoile" [class.est-pleine]="pleine">★</span>
+                }
+              </span>
+              <span class="lecteur-seul">Note moyenne : {{ note }} sur 5</span>
+              <span class="fiche__note-chiffre">{{ note }}</span>
+              <span class="fiche__note-nb">
+                ({{ avis()!.length }} avis)
+              </span>
+            </p>
+          }
+
+          <app-montant class="fiche__prix" [valeur]="a.prix" />
+
+          @if (a.description) {
+            <p class="fiche__description mesure">{{ a.description }}</p>
+          }
+
+          <!-- Le stock est annoncé ici, pas au moment de payer. -->
+          <p class="fiche__stock" [class.est-rupture]="enRupture()" [class.est-faible]="stockFaible()">
+            @if (enRupture()) {
+              Rupture de stock
+            } @else if (stockFaible()) {
+              Plus que {{ a.stock }} en stock
+            } @else {
+              En stock
+            }
+          </p>
+
+          @if (!enRupture()) {
+            <div class="achat">
+              <div class="quantite" role="group" aria-label="Quantité">
+                <button
+                  type="button"
+                  class="quantite__bouton"
+                  [disabled]="quantite() <= 1"
+                  aria-label="Diminuer la quantité"
+                  (click)="changerQuantite(-1)"
+                >
+                  −
+                </button>
+                <span class="quantite__valeur montant" aria-live="polite">{{ quantite() }}</span>
+                <button
+                  type="button"
+                  class="quantite__bouton"
+                  [disabled]="quantite() >= quantiteMax()"
+                  aria-label="Augmenter la quantité"
+                  (click)="changerQuantite(1)"
+                >
+                  +
+                </button>
+              </div>
+
+              <button
+                type="button"
+                class="bouton bouton--plein achat__action"
+                [disabled]="ajoutEnCours()"
+                (click)="ajouterAuPanier()"
+              >
+                {{ ajoutEnCours() ? 'Ajout…' : 'Ajouter au panier' }}
+              </button>
+            </div>
+
+            @if (confirmation(); as texte) {
+              <div class="fiche__confirmation">
+                <app-alerte [message]="texte" ton="succes" />
+                <a class="fiche__vers-panier" routerLink="/panier">Voir mon panier</a>
+              </div>
+            }
+          } @else {
+            <p class="fiche__indispo">
+              Cet article n'est plus disponible. Il reviendra peut-être :
+              repassez voir le catalogue.
+            </p>
+          }
+        </div>
+      </article>
+
+      <!-- Avis -->
+      <section class="avis">
+        <h2 class="titre-section avis__titre">Avis des clients</h2>
+
+        @if (avis() === null) {
+          <app-squelette forme="texte" [nombre]="3" annonce="Chargement des avis" />
+        } @else if (avis()!.length === 0) {
+          <p class="avis__vide">
+            Aucun avis pour cet article. Seuls les clients qui l'ont acheté et
+            payé peuvent en laisser un.
+          </p>
+        } @else {
+          <ul class="avis__liste">
+            @for (a of avis()!; track a.idAvis) {
+              <li class="avis__element">
+                <div class="avis__tete">
+                  <span class="avis__auteur">{{ a.nomAuteur }}</span>
+                  <span class="etoiles" aria-hidden="true">
+                    @for (pleine of etoiles(a.note); track $index) {
+                      <span class="etoile" [class.est-pleine]="pleine">★</span>
+                    }
+                  </span>
+                  <span class="lecteur-seul">{{ a.note }} sur 5</span>
+                  <time class="avis__date" [attr.datetime]="a.dateAvis">{{ a.dateAvis }}</time>
+                </div>
+                @if (a.commentaire) {
+                  <p class="avis__texte mesure">{{ a.commentaire }}</p>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <!-- Articles du même rayon -->
+      @if (similaires().length) {
+        <section class="similaires">
+          <h2 class="titre-section">Dans le même rayon</h2>
+          <div class="grille-produits">
+            @for (s of similaires(); track s.id) {
+              <app-carte-article [article]="s" (ajouter)="ajouterSimilaire($event)" />
+            }
+          </div>
+        </section>
+      }
+    } @else if (!erreur()) {
+      <div class="fiche fiche--attente">
+        <div class="fiche__visuel fiche__visuel--vide"></div>
+        <div class="fiche__infos">
+          <app-squelette forme="texte" [nombre]="5" annonce="Chargement de l'article" />
+        </div>
+      </div>
+    }
+  }
+</div>

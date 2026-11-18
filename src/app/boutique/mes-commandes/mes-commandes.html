@@ -1,0 +1,73 @@
+<div class="contenu">
+  <h1 class="titre-section entete">Mes commandes</h1>
+
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" [reessayable]="true" (reessayer)="charger()" />
+  }
+
+  @if (commandes() === null && !erreur()) {
+    <app-squelette forme="tableau" [nombre]="4" annonce="Chargement de vos commandes" />
+  } @else if (triees().length === 0) {
+    <app-etat-vide
+      titre="Aucune commande pour l'instant"
+      detail="Vos commandes apparaîtront ici dès votre premier achat."
+    />
+    <p class="vers-catalogue">
+      <a class="bouton bouton--plein" routerLink="/catalogue">Voir le catalogue</a>
+    </p>
+  } @else {
+    <ul class="commandes">
+      @for (commande of triees(); track commande.idCommande) {
+        <li class="commande">
+          <div class="commande__tete">
+            <div class="commande__identite">
+              <h2 class="commande__numero">Commande nº {{ commande.idCommande }}</h2>
+              <time class="commande__date" [attr.datetime]="commande.dateCommande">
+                {{ commande.dateCommande }}
+              </time>
+            </div>
+
+            <div class="commande__tampons">
+              <app-tampon [statutCommande]="commande.statut" />
+              @if (commande.statutPaiement) {
+                <app-tampon [statutPaiement]="commande.statutPaiement" [petit]="true" />
+              }
+            </div>
+          </div>
+
+          <ul class="commande__lignes">
+            @for (ligne of commande.lignes; track ligne.idArticle) {
+              <li class="commande__ligne">
+                <span class="commande__quantite">{{ ligne.quantite }}×</span>
+                <a class="commande__article" [routerLink]="['/article', ligne.idArticle]">
+                  {{ ligne.libelle }}
+                </a>
+                <app-montant class="commande__sous-total" [valeur]="ligne.sousTotal" [devise]="false" />
+              </li>
+            }
+          </ul>
+
+          <div class="commande__pied">
+            <div class="commande__total">
+              <span class="etiquette">Total</span>
+              <app-montant class="commande__montant" [valeur]="commande.montantTotal" />
+            </div>
+
+            <div class="commande__actions">
+              @if (suiviUtile(commande)) {
+                <a
+                  class="bouton bouton--plein"
+                  [routerLink]="['/paiement', commande.referencePaiement]"
+                >
+                  Suivre le paiement
+                </a>
+              } @else if (aPayer(commande)) {
+                <a class="bouton bouton--contour" routerLink="/commande">Reprendre le paiement</a>
+              }
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

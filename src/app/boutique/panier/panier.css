@@ -1,0 +1,273 @@
+:host {
+  display: block;
+  padding-block: var(--e6) var(--e9);
+}
+
+.entete {
+  display: flex;
+  align-items: baseline;
+  gap: var(--e4);
+  margin-bottom: var(--e6);
+}
+
+.entete__compte {
+  font-size: var(--t-petit);
+  color: var(--texte-faible);
+  font-variant-numeric: tabular-nums;
+}
+
+.panier__alerte {
+  display: block;
+  margin-bottom: var(--e5);
+}
+
+.panier__retour {
+  display: flex;
+  justify-content: center;
+}
+
+.panier {
+  display: grid;
+  gap: var(--e7);
+}
+
+@media (min-width: 900px) {
+  .panier {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: var(--e8);
+    align-items: start;
+  }
+}
+
+/* ---------- Lignes ---------- */
+
+.lignes {
+  display: flex;
+  flex-direction: column;
+}
+
+.ligne {
+  display: grid;
+  /* Téléphone : vignette à gauche, le reste réparti sur trois rangs. */
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'visuel texte texte'
+    'visuel quantite total'
+    'visuel retrait retrait';
+  align-items: center;
+  gap: var(--e2) var(--e3);
+  padding-block: var(--e4);
+  border-bottom: 1px solid var(--trait);
+  transition: opacity var(--duree-courte) var(--sortie);
+}
+
+/* Pendant un aller-retour serveur, la ligne s'estompe : le visiteur voit
+   que son clic est parti sans que la mise en page bouge. */
+.ligne.est-occupee {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.ligne__visuel {
+  grid-area: visuel;
+  width: 72px;
+  text-decoration: none;
+}
+
+.ligne__texte {
+  grid-area: texte;
+  min-width: 0;
+}
+
+.ligne__nom {
+  font-size: var(--t-base);
+  font-weight: 500;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ligne__nom:hover {
+  text-decoration: underline;
+}
+
+.ligne__unitaire {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  margin-top: 2px;
+}
+
+.ligne__total {
+  grid-area: total;
+  font-size: var(--t-moyen);
+  justify-self: end;
+}
+
+.ligne__retrait {
+  grid-area: retrait;
+  justify-self: start;
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  min-height: 44px;
+}
+
+.ligne__retrait:hover:not(:disabled) {
+  color: var(--echec);
+}
+
+@media (min-width: 680px) {
+  .ligne {
+    grid-template-columns: 88px minmax(0, 1fr) auto auto auto;
+    grid-template-areas: 'visuel texte quantite total retrait';
+    gap: var(--e5);
+  }
+
+  .ligne__visuel {
+    width: 88px;
+  }
+
+  .ligne__retrait {
+    justify-self: end;
+  }
+}
+
+/* ---------- Quantité ---------- */
+
+.quantite {
+  grid-area: quantite;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.quantite__bouton {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-size: 1.0625rem;
+  transition: background var(--duree-courte) var(--sortie);
+}
+
+.quantite__bouton:hover:not(:disabled) {
+  background: var(--fond-doux);
+}
+
+.quantite__bouton:disabled {
+  color: var(--texte-faible);
+  cursor: not-allowed;
+}
+
+.quantite__valeur {
+  min-width: 36px;
+  text-align: center;
+  font-size: var(--t-base);
+}
+
+/* ---------- Récapitulatif ---------- */
+
+.recap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e4);
+  padding: var(--e5);
+  background: var(--fond-doux);
+  border-radius: var(--rayon-grand);
+}
+
+@media (min-width: 900px) {
+  .recap {
+    position: sticky;
+    top: calc(var(--tete-h) + var(--e4));
+  }
+}
+
+.recap__titre {
+  font-size: var(--t-moyen);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.recap__lignes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e3);
+  padding-bottom: var(--e4);
+  border-bottom: 1px solid var(--trait);
+}
+
+.recap__ligne {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--e3);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.recap__ligne dd {
+  font-variant-numeric: tabular-nums;
+  color: var(--texte);
+}
+
+.recap__ligne--note dd {
+  color: var(--texte-faible);
+  font-size: var(--t-micro);
+  text-align: right;
+}
+
+.recap__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--e3);
+  font-weight: 600;
+}
+
+.recap__montant {
+  font-size: 1.5rem;
+}
+
+.recap__paiement {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  text-align: center;
+}
+
+.recap__secondaire {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--e3);
+  padding-top: var(--e3);
+  border-top: 1px solid var(--trait);
+  font-size: var(--t-petit);
+}
+
+.recap__secondaire a,
+.recap__secondaire button {
+  color: var(--texte-doux);
+  text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.recap__secondaire a:hover {
+  color: var(--encre);
+  text-decoration: underline;
+}
+
+.recap__secondaire button:hover:not(:disabled) {
+  color: var(--echec);
+  text-decoration: underline;
+}

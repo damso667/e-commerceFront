@@ -1,0 +1,200 @@
+:host {
+  display: block;
+  padding-block: var(--e6) var(--e9);
+}
+
+.entete {
+  margin-bottom: var(--e6);
+}
+
+.commande__retour {
+  display: flex;
+  justify-content: center;
+}
+
+.commande {
+  display: grid;
+  gap: var(--e7);
+}
+
+@media (min-width: 900px) {
+  .commande {
+    /* Le paiement d'abord, le récapitulatif à droite : l'action est à
+       gauche, là où commence la lecture. */
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: var(--e8);
+    align-items: start;
+  }
+}
+
+/* ---------- Formulaire de paiement ---------- */
+
+.paiement__titre {
+  font-size: var(--t-moyen);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-bottom: var(--e3);
+}
+
+.paiement__intro {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  line-height: 1.6;
+  margin-bottom: var(--e5);
+}
+
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e5);
+  margin-top: var(--e4);
+}
+
+.formulaire__note {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  line-height: 1.55;
+}
+
+/* ---------- Opérateurs ---------- */
+
+.operateurs {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+}
+
+.operateurs__deduit {
+  font-size: var(--t-micro);
+  color: var(--texte-doux);
+}
+
+.operateurs__choix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--e3);
+  margin-top: var(--e1);
+}
+
+.operateur {
+  min-height: 56px;
+  padding: var(--e3) var(--e4);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  background: var(--fond);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--texte-doux);
+  text-align: center;
+  transition:
+    border-color var(--duree-courte) var(--sortie),
+    color var(--duree-courte) var(--sortie),
+    background var(--duree-courte) var(--sortie);
+}
+
+.operateur:hover {
+  border-color: var(--trait-fort);
+  color: var(--texte);
+}
+
+/* L'opérateur retenu est marqué par la bordure ET le texte : la couleur
+   seule ne suffirait pas à le distinguer. */
+.operateur.est-choisi {
+  border-color: var(--encre);
+  color: var(--encre);
+  background: var(--encre-brume);
+  box-shadow: inset 0 0 0 1px var(--encre);
+}
+
+/* ---------- Récapitulatif ---------- */
+
+.recap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e4);
+  padding: var(--e5);
+  background: var(--fond-doux);
+  border-radius: var(--rayon-grand);
+}
+
+@media (min-width: 900px) {
+  .recap {
+    position: sticky;
+    top: calc(var(--tete-h) + var(--e4));
+  }
+}
+
+.recap__titre {
+  font-size: var(--t-moyen);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.recap__lignes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e3);
+  padding-bottom: var(--e4);
+  border-bottom: 1px solid var(--trait);
+}
+
+.recap__ligne {
+  display: flex;
+  align-items: baseline;
+  gap: var(--e2);
+  font-size: var(--t-petit);
+}
+
+.recap__quantite {
+  color: var(--texte-faible);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.recap__nom {
+  flex: 1;
+  min-width: 0;
+  color: var(--texte-doux);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.recap__prix {
+  flex-shrink: 0;
+  font-size: var(--t-petit);
+}
+
+.recap__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--e3);
+  font-weight: 600;
+}
+
+.recap__montant {
+  font-size: 1.5rem;
+}
+
+.recap__modifier {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  text-decoration: none;
+  text-align: center;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: var(--e2);
+  border-top: 1px solid var(--trait);
+}
+
+.recap__modifier:hover {
+  color: var(--encre);
+  text-decoration: underline;
+}

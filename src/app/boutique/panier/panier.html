@@ -1,0 +1,135 @@
+<div class="contenu">
+  <header class="entete">
+    <h1 class="titre-section">Mon panier</h1>
+    @if (!chargement() && nombreArticles() > 0) {
+      <p class="entete__compte">
+        {{ nombreArticles() }} article{{ nombreArticles() > 1 ? 's' : '' }}
+      </p>
+    }
+  </header>
+
+  @if (erreur(); as texte) {
+    <app-alerte
+      class="panier__alerte"
+      [message]="texte"
+      ton="echec"
+      [reessayable]="true"
+      (reessayer)="charger()"
+    />
+  }
+
+  @if (chargement()) {
+    <app-squelette forme="tarif" [nombre]="3" annonce="Chargement du panier" />
+  } @else if (vide()) {
+    <app-etat-vide
+      titre="Votre panier est vide"
+      detail="Parcourez le catalogue et ajoutez ce qui vous intéresse."
+    />
+    <p class="panier__retour">
+      <a class="bouton bouton--plein" routerLink="/catalogue">Voir le catalogue</a>
+    </p>
+  } @else if (panier(); as p) {
+    <div class="panier">
+      <ul class="lignes">
+        @for (ligne of p.lignes; track ligne.idArticle) {
+          <li class="ligne" [class.est-occupee]="ligneOccupee() === ligne.idArticle">
+            <a class="ligne__visuel" [routerLink]="['/article', ligne.idArticle]">
+              <app-pastille [libelle]="ligne.libelle" ratio="1" />
+            </a>
+
+            <div class="ligne__texte">
+              <a class="ligne__nom" [routerLink]="['/article', ligne.idArticle]">
+                {{ ligne.libelle }}
+              </a>
+              <p class="ligne__unitaire">
+                <app-montant [valeur]="ligne.prixUnitaire" [devise]="false" />
+                FCFA l'unité
+              </p>
+            </div>
+
+            <div class="quantite" role="group" [attr.aria-label]="'Quantité pour ' + ligne.libelle">
+              <button
+                type="button"
+                class="quantite__bouton"
+                [disabled]="ligneOccupee() !== null"
+                [attr.aria-label]="'Diminuer la quantité de ' + ligne.libelle"
+                (click)="diminuer(ligne)"
+              >
+                −
+              </button>
+              <span class="quantite__valeur montant">{{ ligne.quantite }}</span>
+              <button
+                type="button"
+                class="quantite__bouton"
+                [disabled]="ligneOccupee() !== null"
+                [attr.aria-label]="'Augmenter la quantité de ' + ligne.libelle"
+                (click)="augmenter(ligne)"
+              >
+                +
+              </button>
+            </div>
+
+            <app-montant class="ligne__total" [valeur]="ligne.sousTotal" />
+
+            <button
+              type="button"
+              class="ligne__retrait"
+              [disabled]="ligneOccupee() !== null"
+              [attr.aria-label]="'Retirer ' + ligne.libelle + ' du panier'"
+              (click)="retirer(ligne)"
+            >
+              Retirer
+            </button>
+          </li>
+        }
+      </ul>
+
+      <!-- Récapitulatif : collant sur grand écran, pour que le total et le
+           bouton restent atteignables quelle que soit la longueur du
+           panier. -->
+      <aside class="recap" aria-label="Récapitulatif de la commande">
+        <h2 class="recap__titre">Récapitulatif</h2>
+
+        <dl class="recap__lignes">
+          <div class="recap__ligne">
+            <dt>Articles</dt>
+            <dd>{{ nombreArticles() }}</dd>
+          </div>
+          <div class="recap__ligne">
+            <dt>Sous-total</dt>
+            <dd><app-montant [valeur]="total()" /></dd>
+          </div>
+          <div class="recap__ligne recap__ligne--note">
+            <dt>Livraison</dt>
+            <dd>À convenir avec la boutique</dd>
+          </div>
+        </dl>
+
+        <div class="recap__total">
+          <span>Total à payer</span>
+          <app-montant class="recap__montant" [valeur]="total()" />
+        </div>
+
+        <a class="bouton bouton--plein bouton--large" routerLink="/commande">
+          Passer la commande
+        </a>
+
+        <p class="recap__paiement">
+          Paiement par MTN Mobile Money ou Orange Money, depuis votre
+          téléphone.
+        </p>
+
+        <div class="recap__secondaire">
+          <a routerLink="/catalogue">Continuer mes achats</a>
+          <button
+            type="button"
+            [disabled]="ligneOccupee() !== null"
+            (click)="viderTout()"
+          >
+            Vider le panier
+          </button>
+        </div>
+      </aside>
+    </div>
+  }
+</div>
