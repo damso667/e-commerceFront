@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { VisionneuseService } from '../../core/visionneuse.service';
 import { Article } from '../../models/api.models';
 import { Montant } from '../montant/montant';
 import { Pastille } from '../pastille/pastille';
@@ -28,6 +29,8 @@ import { Pastille } from '../pastille/pastille';
   styleUrl: './carte-article.css',
 })
 export class CarteArticle {
+  private readonly visionneuse = inject(VisionneuseService);
+
   readonly article = input.required<Article>();
   /** Nom du rayon, affiché en légère surimpression sous le nom. */
   readonly categorie = input<string>('');
@@ -54,6 +57,17 @@ export class CarteArticle {
   protected readonly libelleAccessible = computed(
     () => `${this.libelleAjout()} : ${this.article().nom}`,
   );
+
+  /**
+   * Ouvre la photo en grand sans quitter la grille. Regarder un produit de
+   * plus près ne devrait pas coûter un aller-retour vers la fiche, puis un
+   * retour qui fait repartir du haut de la liste.
+   */
+  protected agrandir(evenement: Event): void {
+    evenement.preventDefault();
+    evenement.stopPropagation();
+    this.visionneuse.ouvrir(this.article().imageUrl, this.article().nom);
+  }
 
   protected surAjout(evenement: Event): void {
     // La carte entière est un lien vers la fiche ; le bouton doit agir

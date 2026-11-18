@@ -18,7 +18,6 @@ interface Brouillon {
   description: string;
   prix: string;
   stock: string;
-  imageUrl: string;
   idCategorie: string;
 }
 
@@ -29,7 +28,6 @@ function brouillonVide(): Brouillon {
     description: '',
     prix: '',
     stock: '',
-    imageUrl: '',
     idCategorie: '',
   };
 }
@@ -80,6 +78,17 @@ export class AdminArticles {
   protected readonly envoi = signal(false);
   protected readonly erreurFormulaire = signal<string | null>(null);
   protected readonly champsInvalides = signal<[string, string][] | null>(null);
+
+  /* ---------- Photo ---------- */
+
+  /**
+   * Article dont la photo est en cours d'envoi, et article edite dont on
+   * garde la photo sous les yeux : le formulaire montre ce qui est deja en
+   * ligne plutot que de laisser deviner.
+   */
+  protected readonly envoiImage = signal<number | null>(null);
+  protected readonly erreurImage = signal<string | null>(null);
+  protected readonly articleEdite = signal<ArticleAdmin | null>(null);
 
   /* ---------- Ajustement de stock ---------- */
 
@@ -188,6 +197,8 @@ export class AdminArticles {
 
   protected ouvrirCreation(): void {
     this.brouillon.set(brouillonVide());
+    this.articleEdite.set(null);
+    this.erreurImage.set(null);
     this.erreurFormulaire.set(null);
     this.champsInvalides.set(null);
     this.formulaireOuvert.set(true);
@@ -202,9 +213,10 @@ export class AdminArticles {
       description: article.description ?? '',
       prix: String(article.prix),
       stock: String(article.stock ?? 0),
-      imageUrl: article.imageUrl ?? '',
       idCategorie: rayon ? String(rayon.idCategorie) : '',
     });
+    this.articleEdite.set(article);
+    this.erreurImage.set(null);
     this.erreurFormulaire.set(null);
     this.champsInvalides.set(null);
     this.formulaireOuvert.set(true);
@@ -229,9 +241,6 @@ export class AdminArticles {
     if (b.description.trim()) {
       donnees.description = b.description.trim();
     }
-    if (b.imageUrl.trim()) {
-      donnees.imageUrl = b.imageUrl.trim();
-    }
 
     this.envoi.set(true);
     this.erreurFormulaire.set(null);
@@ -243,12 +252,18 @@ export class AdminArticles {
         : this.service.modifierArticle(b.idArticle, donnees);
 
     requete.subscribe({
-      next: () => {
+      next: (article) => {
         this.envoi.set(false);
-        this.formulaireOuvert.set(false);
-        this.message.set(
-          b.idArticle === null ? 'Article créé.' : 'Article modifié.',
-        );
+        if (b.idArticle === null) {
+          // On reste sur le formulaire : la photo a besoin de
+          // l'identifiant de l'article, qui n'existait pas avant cet envoi.
+          this.brouillon.update((courant) => ({ ...courant, idArticle: article.idArticle }));
+          this.articleEdite.set(article);
+          this.message.set('Article créé. Vous pouvez maintenant ajouter sa photo.');
+        } else {
+          this.formulaireOuvert.set(false);
+          this.message.set('Article modifié.');
+        }
         this.charger(this.page().page);
         this.chargerCategories();
       },
@@ -260,6 +275,67 @@ export class AdminArticles {
         }
       },
     });
+  }
+
+  // ---------------- Photo ----------------
+
+  protected deposerImage(evenement: Event, idArticle: number | null): void {
+    const champ = evenement.target as HTMLInputElement;
+    const fichier = champ.files?.[0] ?? null;
+    // Remettre le champ a zero permet de redeposer le meme fichier apres
+    // une correction : sinon le navigateur n'emet plus d'evenement.
+    champ.value = '';
+    if (!fichier || idArticle === null) {
+      return;
+    }
+    const probleme = this.service.verifierImage(fichier);
+    if (probleme) {
+      this.erreurImage.set(probleme);
+      return;
+    }
+    this.envoiImage.set(idArticle);
+    this.erreurImage.set(null);
+
+    this.service.deposerImage(idArticle, fichier).subscribe({
+      next: (article) => {
+        this.envoiImage.set(null);
+        this.articleEdite.set(article);
+        this.message.set('Photo enregistrée.');
+        this.remplacerDansLaListe(article);
+      },
+      error: (erreur: ErreurBoutique) => {
+        this.envoiImage.set(null);
+        this.erreurImage.set(erreur.message);
+      },
+    });
+  }
+
+  protected retirerImage(idArticle: number): void {
+    this.envoiImage.set(idArticle);
+    this.erreurImage.set(null);
+
+    this.service.retirerImage(idArticle).subscribe({
+      next: (article) => {
+        this.envoiImage.set(null);
+        this.articleEdite.set(article);
+        this.message.set('Photo retirée.');
+        this.remplacerDansLaListe(article);
+      },
+      error: (erreur: ErreurBoutique) => {
+        this.envoiImage.set(null);
+        this.erreurImage.set(erreur.message);
+      },
+    });
+  }
+
+  /** Met la ligne a jour sur place : recharger ferait perdre la position. */
+  private remplacerDansLaListe(article: ArticleAdmin): void {
+    this.page.update((p) => ({
+      ...p,
+      contenu: p.contenu.map((ligne) =>
+        ligne.idArticle === article.idArticle ? article : ligne,
+      ),
+    }));
   }
 
   // ---------------- Stock ----------------

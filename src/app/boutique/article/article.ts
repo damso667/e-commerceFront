@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { VisionneuseService } from '../../core/visionneuse.service';
 import { Article, Avis } from '../../models/api.models';
 import { ErreurBoutique } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
@@ -38,6 +39,7 @@ export class ArticlePage {
   private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly visionneuse = inject(VisionneuseService);
 
   protected readonly connecte = this.auth.connecte;
 
@@ -247,6 +249,10 @@ export class ArticlePage {
     this.panier.ajouter(article.id, 1).subscribe({
       error: (erreur: ErreurBoutique) => this.erreur.set(erreur.message),
     });
+  }
+
+  protected agrandir(article: Article): void {
+    this.visionneuse.ouvrir(article.imageUrl, article.nom);
   }
 
   /** Étoiles pleines d'une note, pour l'affichage. */

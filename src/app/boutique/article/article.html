@@ -16,12 +16,43 @@
     @if (article(); as a) {
       <article class="fiche">
         <div class="fiche__visuel">
-          <app-pastille
-            [libelle]="a.nom"
-            [src]="a.imageUrl"
-            [prioritaire]="true"
-            ratio="4 / 5"
-          />
+          <!-- Avec une photo, le visuel devient un bouton : c'est le geste
+               attendu sur une fiche produit. Sans photo, il reste un bloc
+               inerte — un bouton qui agrandirait un monogramme serait une
+               promesse vide. -->
+          @if (a.imageUrl) {
+            <button
+              type="button"
+              class="fiche__agrandir"
+              [attr.aria-label]="'Voir la photo en grand : ' + a.nom"
+              (click)="agrandir(a)"
+            >
+              <app-pastille
+                [libelle]="a.nom"
+                [src]="a.imageUrl"
+                [prioritaire]="true"
+                ratio="4 / 5"
+              />
+              <span class="fiche__loupe" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor"
+                          stroke-width="1.8" />
+                  <path d="M11 8.2v5.6M8.2 11h5.6" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" />
+                  <path d="m16 16 4.5 4.5" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Agrandir
+              </span>
+            </button>
+          } @else {
+            <app-pastille
+              [libelle]="a.nom"
+              [src]="a.imageUrl"
+              [prioritaire]="true"
+              ratio="4 / 5"
+            />
+          }
         </div>
 
         <div class="fiche__infos">

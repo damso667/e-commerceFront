@@ -56,6 +56,8 @@ export class AdminModerationService {
       ARTICLE_SUPPRIME: 'Article supprimé',
       ARTICLE_RETIRE_VENTE: 'Article retiré de la vente',
       STOCK_AJUSTE: 'Stock ajusté',
+      ARTICLE_IMAGE_DEPOSEE: "Photo d'article déposée",
+      ARTICLE_IMAGE_RETIREE: "Photo d'article retirée",
       CATEGORIE_CREEE: 'Catégorie créée',
       CATEGORIE_MODIFIEE: 'Catégorie modifiée',
       CATEGORIE_SUPPRIMEE: 'Catégorie supprimée',

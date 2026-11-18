@@ -156,20 +156,69 @@
           }
         </div>
 
-        <div class="champ forme__large">
-          <label class="champ__libelle" for="a-image">Adresse de l'image</label>
-          <input
-            id="a-image"
-            class="champ__saisie"
-            type="url"
-            placeholder="https://…"
-            [value]="brouillon().imageUrl"
-            (input)="majBrouillon('imageUrl', $any($event.target).value)"
-          />
-          <p class="champ__aide">
-            Facultatif. Sans image, la boutique affiche un visuel de
-            remplacement portant le nom de l'article.
-          </p>
+        <!-- La photo se téléverse et vit en base, comme le logo. Elle a
+             besoin de l'identifiant de l'article : sur une création, le
+             champ n'apparaît qu'une fois l'article enregistré. -->
+        <div class="photo forme__large">
+          <p class="champ__libelle">Photo du produit</p>
+
+          @if (brouillon().idArticle === null) {
+            <p class="photo__attente">
+              Enregistrez d'abord l'article : sa photo pourra être ajoutée
+              juste après.
+            </p>
+          } @else {
+            @if (erreurImage(); as texte) {
+              <app-alerte [message]="texte" ton="echec" />
+            }
+
+            <div class="photo__corps">
+              <div class="photo__apercu">
+                @if (articleEdite()?.imageUrl; as src) {
+                  <img [src]="src" [alt]="'Photo de ' + brouillon().libelle" />
+                } @else {
+                  <span class="photo__absente">Aucune photo</span>
+                }
+              </div>
+
+              <div class="photo__actions">
+                <label class="bouton bouton--contour photo__bouton">
+                  @if (envoiImage() === brouillon().idArticle) {
+                    Envoi…
+                  } @else if (articleEdite()?.imageUrl) {
+                    Remplacer la photo
+                  } @else {
+                    Choisir une photo
+                  }
+                  <input
+                    type="file"
+                    class="photo__champ"
+                    accept="image/png,image/jpeg,image/webp"
+                    [disabled]="envoiImage() !== null"
+                    (change)="deposerImage($event, brouillon().idArticle)"
+                  />
+                </label>
+
+                @if (articleEdite()?.imageTeleversee) {
+                  <button
+                    type="button"
+                    class="ad-mini ad-mini--danger"
+                    [disabled]="envoiImage() !== null"
+                    (click)="retirerImage(brouillon().idArticle!)"
+                  >
+                    Retirer
+                  </button>
+                }
+
+                <p class="photo__note">
+                  PNG, JPEG ou WebP, 1 Mo maximum. Le SVG est refusé : il
+                  peut contenir du script et serait servi depuis l'origine
+                  de l'API. Sans photo, la boutique affiche un visuel de
+                  remplacement portant le nom de l'article.
+                </p>
+              </div>
+            </div>
+          }
         </div>
 
         <div class="champ forme__large">
@@ -282,10 +331,23 @@
           @for (article of page().contenu; track article.idArticle) {
             <tr>
               <td data-libelle="Article">
-                <span class="ad-tableau__fort">{{ article.libelle }}</span>
-                @if (!article.imageUrl) {
-                  <span class="ad-appui">sans image</span>
-                }
+                <span class="ligne">
+                  <!-- La vignette dit en un coup d'oeil quels articles
+                       attendent encore une photo. -->
+                  <span class="vignette">
+                    @if (article.imageUrl; as src) {
+                      <img [src]="src" [alt]="''" />
+                    } @else {
+                      <span class="vignette__vide" aria-hidden="true">—</span>
+                    }
+                  </span>
+                  <span class="ligne__texte">
+                    <span class="ad-tableau__fort">{{ article.libelle }}</span>
+                    @if (!article.imageUrl) {
+                      <span class="ad-appui">sans photo</span>
+                    }
+                  </span>
+                </span>
               </td>
               <td data-libelle="Rayon">{{ article.nomCategorie }}</td>
               <td data-libelle="Prix" class="ad-tableau__fort">

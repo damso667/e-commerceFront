@@ -18,6 +18,27 @@
     </div>
   </a>
 
+  <!-- Hors du lien, pour la même raison que le bouton d'ajout : un bouton
+       imbriqué dans une ancre est invalide. Il est positionné par-dessus
+       le visuel, et n'apparaît que lorsqu'il y a vraiment une photo à
+       agrandir — sur un visuel de remplacement il ne montrerait rien. -->
+  @if (article().imageUrl) {
+    <button
+      type="button"
+      class="carte__loupe"
+      [attr.aria-label]="'Voir la photo en grand : ' + article().nom"
+      (click)="agrandir($event)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+        <path d="M11 8.2v5.6M8.2 11h5.6" fill="none" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round" />
+        <path d="m16 16 4.5 4.5" fill="none" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+    </button>
+  }
+
   <!-- Hors du lien : un bouton imbriqué dans une ancre est invalide et
        casse la navigation au clavier. -->
   <button

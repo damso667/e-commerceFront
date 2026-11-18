@@ -1,0 +1,39 @@
+@if (image(); as img) {
+  <div
+    #boite
+    class="vis"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'Image agrandie : ' + img.alt"
+    tabindex="-1"
+    (click)="surFond($event)"
+    (keydown)="surClavier($event)"
+  >
+    <button type="button" class="vis__fermer" aria-label="Fermer l'image" (click)="fermer()">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path
+          d="m6 6 12 12M18 6 6 18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+
+    <figure class="vis__cadre">
+      @if (!chargee()) {
+        <span class="vis__attente" role="status">Chargement de l'image…</span>
+      }
+      <img
+        class="vis__image"
+        [class.est-chargee]="chargee()"
+        [src]="img.src"
+        [alt]="img.alt"
+        decoding="async"
+        (load)="chargee.set(true)"
+      />
+      <figcaption class="vis__legende">{{ img.alt }}</figcaption>
+    </figure>
+  </div>
+}

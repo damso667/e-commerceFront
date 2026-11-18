@@ -816,3 +816,9 @@ table,
     justify-content: space-between;
   }
 }
+
+/* Posee par la visionneuse : sans elle, la grille de produits defile sous
+   l'image agrandie au moindre geste. */
+.defilement-gele {
+  overflow: hidden;
+}

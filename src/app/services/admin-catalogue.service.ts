@@ -15,6 +15,11 @@ export interface ArticleRequete {
   description?: string;
   prix: number;
   stock: number;
+  /**
+   * URL externe. Le back-office ne l'envoie plus — les photos se
+   * téléversent — mais l'API l'accepte encore pour les articles amorcés
+   * avec une adresse. Omise, elle n'est pas écrasée.
+   */
   imageUrl?: string;
   idCategorie: number;
 }
@@ -76,6 +81,43 @@ export class AdminCatalogueService {
       variation,
       motif,
     });
+  }
+
+  /**
+   * Dépôt de la photo du produit.
+   *
+   * Elle est envoyée en fichier, pas en adresse : l'administrateur publie
+   * ce qu'il possède au lieu de dépendre d'un serveur tiers qui peut
+   * disparaître. L'API accepte PNG, JPEG et WebP jusqu'à 1 Mo, et refuse
+   * le SVG.
+   *
+   * L'envoi est une étape distincte de l'enregistrement du reste : un
+   * article se crée d'abord, sa photo s'ajoute ensuite — il faut son
+   * identifiant pour savoir où la ranger.
+   */
+  deposerImage(idArticle: number, fichier: File): Observable<ArticleAdmin> {
+    return this.api.postFichier<ArticleAdmin>(
+      `/api/admin/articles/${idArticle}/image`,
+      'fichier',
+      fichier,
+    );
+  }
+
+  /** Retrait de la photo. L'URL externe éventuelle reprend alors la main. */
+  retirerImage(idArticle: number): Observable<ArticleAdmin> {
+    return this.api.delete<ArticleAdmin>(`/api/admin/articles/${idArticle}/image`);
+  }
+
+  /** Contrôles faits avant l'envoi, pour éviter un aller-retour inutile. */
+  verifierImage(fichier: File): string | null {
+    const acceptes = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!acceptes.includes(fichier.type)) {
+      return 'Formats acceptés : PNG, JPEG ou WebP. Le SVG est refusé pour des raisons de sécurité.';
+    }
+    if (fichier.size > 1024 * 1024) {
+      return `Photo trop lourde : ${Math.round(fichier.size / 1024)} Ko, maximum 1 Mo.`;
+    }
+    return null;
   }
 
   /**

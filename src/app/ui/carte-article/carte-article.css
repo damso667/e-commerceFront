@@ -117,3 +117,64 @@
     opacity: 1;
   }
 }
+
+/* ---------- Agrandir la photo ----------
+
+   Au pointeur, le bouton n'apparaît qu'à l'approche de la carte : vingt
+   loupes posées en permanence sur une grille font du bruit. Au doigt, il
+   n'y a pas de survol, donc il reste visible — sinon il serait
+   inatteignable. Il réapparaît toujours au focus clavier. */
+
+.carte__loupe {
+  position: absolute;
+  top: var(--e2);
+  right: var(--e2);
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--rayon-rond);
+  background: rgb(255 255 255 / 0.92);
+  color: var(--texte);
+  box-shadow: var(--ombre-douce);
+  backdrop-filter: blur(4px);
+  transition:
+    opacity var(--duree-courte) var(--sortie),
+    transform var(--duree-courte) var(--sortie),
+    background var(--duree-courte) var(--sortie);
+}
+
+.carte__loupe svg {
+  width: 19px;
+  height: 19px;
+}
+
+.carte__loupe:hover {
+  background: #fff;
+  transform: scale(1.06);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carte__loupe {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  .carte:hover .carte__loupe,
+  .carte__loupe:focus-visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carte__loupe {
+    transition: opacity var(--duree-courte) linear;
+    transform: none;
+  }
+
+  .carte:hover .carte__loupe,
+  .carte__loupe:focus-visible {
+    transform: none;
+  }
+}

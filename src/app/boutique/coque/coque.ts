@@ -7,6 +7,7 @@ import { CatalogueService } from '../../services/catalogue.service';
 import { PanierService } from '../../services/panier.service';
 import { ParametresService } from '../../services/parametres.service';
 import { MarquePaiement } from '../../ui/marque-paiement/marque-paiement';
+import { Visionneuse } from '../../ui/visionneuse/visionneuse';
 
 /**
  * Coque de la boutique : en-tête, contenu, pied de page.
@@ -28,7 +29,7 @@ import { MarquePaiement } from '../../ui/marque-paiement/marque-paiement';
 @Component({
   selector: 'app-coque-boutique',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, MarquePaiement],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, MarquePaiement, Visionneuse],
   templateUrl: './coque.html',
   styleUrl: './coque.css',
 })

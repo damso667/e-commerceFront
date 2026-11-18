@@ -108,7 +108,10 @@ export interface ArticleAdmin {
   description: string | null;
   prix: number;
   stock: number | null;
+  /** Adresse de la photo : celle téléversée si elle existe, sinon l'URL externe. */
   imageUrl: string | null;
+  /** Vrai quand la photo vient d'un fichier déposé, donc retirable. */
+  imageTeleversee: boolean;
   nomCategorie: string;
 }
 
