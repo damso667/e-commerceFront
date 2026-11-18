@@ -1,0 +1,129 @@
+:host {
+  display: block;
+}
+
+.ad-filtres__action {
+  display: flex;
+  gap: var(--e2);
+  align-items: flex-end;
+}
+
+.liste {
+  padding: var(--e4) var(--e5) var(--e5);
+}
+
+@media (max-width: 859px) {
+  .liste {
+    padding: var(--e2) var(--e4) var(--e4);
+  }
+}
+
+.ad-tableau tr.est-ouverte td {
+  background: var(--encre-brume);
+}
+
+/* ---------- Ligne dépliée ---------- */
+
+.depli td {
+  background: var(--fond-doux);
+  padding: var(--e4) var(--e3) var(--e5);
+}
+
+.ad-tableau tbody tr.depli:hover td {
+  background: var(--fond-doux);
+}
+
+.depli__corps {
+  display: grid;
+  gap: var(--e5);
+  grid-template-columns: 1fr;
+  text-align: left;
+}
+
+@media (min-width: 860px) {
+  .depli__corps {
+    grid-template-columns: 1.4fr 1fr;
+    gap: var(--e6);
+  }
+}
+
+.depli__titre {
+  color: var(--texte-faible);
+  margin-bottom: var(--e3);
+}
+
+.depli__cote .depli__titre:not(:first-child) {
+  margin-top: var(--e5);
+}
+
+.lignes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+}
+
+.lignes__ligne {
+  display: flex;
+  align-items: baseline;
+  gap: var(--e3);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.lignes__quantite {
+  color: var(--texte-faible);
+  flex-shrink: 0;
+}
+
+.lignes__nom {
+  flex: 1;
+  min-width: 0;
+  color: var(--texte);
+}
+
+.lignes__prix {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--texte);
+}
+
+.depli__paiement {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e3);
+}
+
+.depli__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e2);
+}
+
+.depli__absent,
+.depli__note {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  max-width: 40ch;
+}
+
+.depli__note {
+  margin-top: var(--e2);
+}
+
+/* Sur téléphone, la ligne dépliée ne doit pas hériter de la mise en fiche
+   des autres lignes : elle a sa propre structure. */
+@media (max-width: 859px) {
+  .depli td {
+    display: block;
+    text-align: left;
+    padding: var(--e4) 0;
+  }
+
+  .depli td::before {
+    content: none;
+  }
+}

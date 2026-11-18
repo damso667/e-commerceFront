@@ -1,0 +1,201 @@
+:host {
+  display: block;
+}
+
+.ad-entete__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e2);
+}
+
+.ad-filtres__action {
+  display: flex;
+  gap: var(--e2);
+  align-items: flex-end;
+}
+
+.ad-filtres__case {
+  justify-content: flex-end;
+}
+
+.case {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  min-height: 44px;
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  cursor: pointer;
+}
+
+.case input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--encre);
+  flex-shrink: 0;
+}
+
+.liste {
+  padding: var(--e4) var(--e5) var(--e5);
+}
+
+@media (max-width: 859px) {
+  .liste {
+    padding: var(--e2) var(--e4) var(--e4);
+  }
+}
+
+/* ---------- Stock ---------- */
+
+.stock {
+  font-weight: 700;
+  color: var(--texte);
+}
+
+.stock.est-faible {
+  color: var(--alerte);
+}
+
+.stock.est-rupture {
+  color: var(--echec);
+}
+
+/* ---------- Formulaire d'article ---------- */
+
+.forme__grille {
+  display: grid;
+  gap: var(--e4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 760px) {
+  .forme__grille {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .forme__large {
+    grid-column: 1 / -1;
+  }
+}
+
+.forme__texte {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.55;
+}
+
+.forme__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e3);
+}
+
+/* ---------- Ajustement de stock ---------- */
+
+.depli td {
+  background: var(--fond-doux);
+  padding: var(--e4) var(--e3);
+}
+
+.ad-tableau tbody tr.depli:hover td {
+  background: var(--fond-doux);
+}
+
+@media (max-width: 859px) {
+  .depli td {
+    display: block;
+    text-align: left;
+    padding: var(--e4) 0;
+  }
+
+  .depli td::before {
+    content: none;
+  }
+}
+
+.stockage__intro {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  max-width: 62ch;
+  margin-bottom: var(--e3);
+  text-align: left;
+}
+
+.stockage__ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--e3);
+}
+
+.stockage__variation {
+  width: 110px;
+}
+
+.stockage__motif {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* ---------- Rayons ---------- */
+
+.rayons__liste {
+  list-style: none;
+  margin: 0 0 var(--e5);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rayon {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  padding-block: var(--e3);
+  border-bottom: 1px solid var(--trait);
+  font-size: var(--t-petit);
+}
+
+.rayon:last-child {
+  border-bottom: none;
+}
+
+.rayon__nom {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  color: var(--texte);
+}
+
+.rayon__compte {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+}
+
+.rayons__ajout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--e3);
+  padding-top: var(--e4);
+  border-top: 1px solid var(--trait);
+}
+
+.rayons__ajout .champ {
+  flex: 1;
+  min-width: 220px;
+}
+
+/* ---------- Confirmation de retrait ---------- */
+
+.ad-mini--confirme {
+  border-color: var(--echec);
+  background: var(--echec);
+  color: var(--texte-inverse);
+}
+
+.ad-mini--confirme:hover {
+  border-color: var(--echec);
+  color: var(--texte-inverse);
+  opacity: 0.9;
+}

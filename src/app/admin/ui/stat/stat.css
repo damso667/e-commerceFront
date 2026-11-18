@@ -1,0 +1,70 @@
+:host {
+  display: block;
+}
+
+.st {
+  height: 100%;
+  background: var(--fond);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-grand);
+  padding: var(--e4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--e1);
+}
+
+.st.est-accent {
+  border-color: var(--encre);
+  background: var(--encre-brume);
+}
+
+.st__libelle {
+  color: var(--texte-faible);
+}
+
+.st__valeur {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--texte);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-top: var(--e1);
+}
+
+.st__evolution {
+  display: flex;
+  align-items: baseline;
+  gap: var(--e1);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  color: var(--texte-doux);
+  margin-top: var(--e1);
+}
+
+.st__evolution.est-bonne {
+  color: var(--succes);
+}
+
+.st__evolution.est-mauvaise {
+  color: var(--echec);
+}
+
+.st__evolution--muette {
+  color: var(--texte-faible);
+  font-weight: 400;
+}
+
+.st__fleche {
+  font-size: var(--t-petit);
+}
+
+.st__ref {
+  font-weight: 400;
+  color: var(--texte-faible);
+}
+
+.st__detail {
+  font-size: var(--t-micro);
+  color: var(--texte-doux);
+  margin-top: var(--e1);
+}

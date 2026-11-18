@@ -181,3 +181,11 @@
   color: var(--texte-doux);
   overflow-wrap: anywhere;
 }
+
+/* La marque de l'operateur tient la place d'une valeur de liste : discrete,
+   alignee sur la ligne de base des autres reponses. */
+.details__operateur {
+  --mp-h: 20px;
+  display: flex;
+  align-items: center;
+}

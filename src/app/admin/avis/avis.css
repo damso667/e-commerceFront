@@ -1,0 +1,129 @@
+:host {
+  display: block;
+}
+
+.ad-filtres__action {
+  display: flex;
+  gap: var(--e2);
+  align-items: flex-end;
+}
+
+.liste {
+  padding: var(--e5);
+}
+
+.avis {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.avis__element {
+  padding-block: var(--e4);
+  border-bottom: 1px solid var(--trait);
+}
+
+.avis__element:first-child {
+  padding-top: 0;
+}
+
+.avis__element:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.avis__tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--e3);
+}
+
+.etoiles {
+  display: inline-flex;
+  gap: 1px;
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.etoile {
+  color: var(--trait-fort);
+}
+
+.etoile.est-pleine {
+  color: #c08a24;
+}
+
+.avis__article {
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.avis__article:hover {
+  color: var(--encre);
+  text-decoration: underline;
+}
+
+.avis__date {
+  margin-left: auto;
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+}
+
+.avis__auteur {
+  margin-top: var(--e2);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+
+.avis__auteur .ad-appui {
+  display: inline;
+  margin-left: var(--e2);
+  font-weight: 400;
+}
+
+.avis__texte {
+  margin-top: var(--e2);
+  font-size: var(--t-petit);
+  line-height: 1.6;
+  color: var(--texte-doux);
+  max-width: 68ch;
+}
+
+.avis__sans {
+  margin-top: var(--e2);
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  font-style: italic;
+}
+
+.avis__actions {
+  margin-top: var(--e3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e2);
+}
+
+.avis__confirme {
+  flex: 1 1 100%;
+  font-size: var(--t-micro);
+  color: var(--echec);
+}
+
+.ad-mini--confirme {
+  border-color: var(--echec);
+  background: var(--echec);
+  color: var(--texte-inverse);
+}
+
+.ad-mini--confirme:hover {
+  border-color: var(--echec);
+  color: var(--texte-inverse);
+  opacity: 0.9;
+}

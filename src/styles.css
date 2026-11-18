@@ -555,3 +555,264 @@ table,
 .evitement:focus {
   top: var(--e4);
 }
+
+/* ============================================================
+   Back-office
+   ============================================================
+
+   Le back-office partage les jetons de la boutique mais pas sa densite :
+   on y lit des tableaux, pas des vitrines. Ces classes sont globales
+   parce que les onze ecrans de l'administration les utilisent toutes, et
+   qu'une copie par composant ferait onze endroits a corriger.
+   ============================================================ */
+
+.ad-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e5);
+}
+
+.ad-entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--e3) var(--e5);
+}
+
+.ad-entete__titre {
+  font-size: var(--t-grand);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ad-entete__sous {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  margin-top: var(--e1);
+}
+
+.ad-carte {
+  background: var(--fond);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-grand);
+  padding: var(--e5);
+}
+
+.ad-carte__titre {
+  font-size: var(--t-moyen);
+  font-weight: 700;
+  margin-bottom: var(--e4);
+}
+
+/* ---------- Barre de filtres ---------- */
+
+.ad-filtres {
+  display: grid;
+  gap: var(--e3);
+  grid-template-columns: 1fr;
+  background: var(--fond);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-grand);
+  padding: var(--e4);
+}
+
+@media (min-width: 760px) {
+  .ad-filtres {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    align-items: end;
+  }
+}
+
+.ad-filtres__action {
+  display: flex;
+  align-items: flex-end;
+}
+
+.ad-select {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--e2) var(--e3);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  background: var(--fond);
+  font: inherit;
+  font-size: var(--t-petit);
+  color: var(--texte);
+}
+
+.ad-select:focus {
+  outline: none;
+  border-color: var(--encre);
+  box-shadow: 0 0 0 3px var(--encre-voile);
+}
+
+/* ---------- Tableaux ----------
+
+   Sur telephone, chaque ligne devient une fiche : l'en-tete de colonne
+   est repris devant la valeur par `data-libelle`. Un tableau qui defile
+   horizontalement cache la moitie de ses colonnes et oblige a viser. */
+
+.ad-tableau {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-petit);
+}
+
+.ad-tableau th {
+  text-align: left;
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texte-faible);
+  padding: var(--e2) var(--e3);
+  border-bottom: 1px solid var(--trait);
+  white-space: nowrap;
+}
+
+.ad-tableau td {
+  padding: var(--e3);
+  border-bottom: 1px solid var(--trait);
+  vertical-align: middle;
+  color: var(--texte-doux);
+}
+
+.ad-tableau tbody tr:hover td {
+  background: var(--fond-doux);
+}
+
+.ad-tableau__fort {
+  color: var(--texte);
+  font-weight: 600;
+}
+
+.ad-tableau__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e2);
+  justify-content: flex-end;
+}
+
+@media (max-width: 859px) {
+  .ad-tableau thead {
+    display: none;
+  }
+
+  .ad-tableau tr {
+    display: block;
+    padding: var(--e3) 0;
+    border-bottom: 1px solid var(--trait);
+  }
+
+  .ad-tableau tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .ad-tableau td {
+    display: flex;
+    gap: var(--e4);
+    align-items: baseline;
+    justify-content: space-between;
+    padding: var(--e1) 0;
+    border: none;
+    text-align: right;
+  }
+
+  .ad-tableau td::before {
+    content: attr(data-libelle);
+    flex: 0 0 auto;
+    font-size: var(--t-micro);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--texte-faible);
+    text-align: left;
+  }
+
+  .ad-tableau td:empty {
+    display: none;
+  }
+
+  .ad-tableau__actions {
+    justify-content: flex-start;
+    padding-top: var(--e2);
+  }
+}
+
+/* ---------- Boutons compacts de ligne ---------- */
+
+.ad-mini {
+  min-height: 36px;
+  padding: 0 var(--e3);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  background: var(--fond);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  color: var(--texte-doux);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e1);
+  text-decoration: none;
+  transition:
+    border-color var(--duree-courte) var(--sortie),
+    color var(--duree-courte) var(--sortie);
+}
+
+.ad-mini:hover:not(:disabled) {
+  border-color: var(--encre);
+  color: var(--encre);
+}
+
+.ad-mini--danger:hover:not(:disabled) {
+  border-color: var(--echec);
+  color: var(--echec);
+}
+
+.ad-mini:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---------- Valeurs ---------- */
+
+.ad-vide {
+  padding: var(--e7) var(--e4);
+  text-align: center;
+  color: var(--texte-doux);
+  font-size: var(--t-petit);
+}
+
+.ad-ref {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: var(--t-micro);
+  color: var(--texte);
+}
+
+/* Ligne d'appui sous une valeur de tableau : l'email sous le nom, le
+   numero sous la reference. Elle est partagee par les six listes du
+   back-office, d'ou sa place ici plutot que dans chacune d'elles. */
+.ad-appui {
+  display: block;
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 859px) {
+  .ad-appui {
+    display: inline;
+    margin-left: var(--e2);
+  }
+}
+
+.ad-cellule-marque {
+  --mp-h: 18px;
+}
+
+@media (max-width: 859px) {
+  .ad-cellule-marque {
+    justify-content: space-between;
+  }
+}

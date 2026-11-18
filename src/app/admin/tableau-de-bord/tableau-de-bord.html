@@ -1,0 +1,356 @@
+<div class="ad-page">
+  <header class="ad-entete">
+    <div>
+      <h1 class="ad-entete__titre">Tableau de bord</h1>
+      @if (donnees(); as d) {
+        <p class="ad-entete__sous">
+          Du {{ jourLisible(d.periode.debut) }} au {{ jourLisible(d.periode.fin) }}
+        </p>
+      }
+    </div>
+
+    <div class="periodes" role="group" aria-label="Période observée">
+      @for (p of periodes; track p.jours) {
+        <button
+          type="button"
+          class="periodes__choix"
+          [class.est-choisie]="jours() === p.jours"
+          [attr.aria-pressed]="jours() === p.jours"
+          (click)="changerPeriode(p.jours)"
+        >
+          {{ p.libelle }}
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" [reessayable]="true" (reessayer)="charger()" />
+  }
+
+  @if (chargement()) {
+    <app-squelette forme="texte" [nombre]="8" annonce="Chargement du tableau de bord" />
+  } @else if (donnees(); as d) {
+    <!-- ============ 1. Ce qui demande une action ============ -->
+    @if (aDesAlertes()) {
+      <section class="rappels" aria-label="À traiter">
+        <h2 class="rappels__titre etiquette">À traiter</h2>
+        <ul class="rappels__liste">
+          @if (d.alertes.commandesAPreparer > 0) {
+            <li class="rappel">
+              <span class="rappel__nombre montant">{{ d.alertes.commandesAPreparer }}</span>
+              <span class="rappel__quoi">
+                commande{{ d.alertes.commandesAPreparer > 1 ? 's' : '' }} payée{{ d.alertes.commandesAPreparer > 1 ? 's' : '' }}
+                à préparer
+              </span>
+            </li>
+          }
+          @if (d.alertes.paiementsBloques > 0) {
+            <li class="rappel rappel--chaud">
+              <span class="rappel__nombre montant">{{ d.alertes.paiementsBloques }}</span>
+              <span class="rappel__quoi">
+                paiement{{ d.alertes.paiementsBloques > 1 ? 's' : '' }} bloqué{{ d.alertes.paiementsBloques > 1 ? 's' : '' }}
+                depuis trop longtemps
+              </span>
+            </li>
+          }
+          @if (d.alertes.articlesEnRupture > 0) {
+            <li class="rappel rappel--chaud">
+              <span class="rappel__nombre montant">{{ d.alertes.articlesEnRupture }}</span>
+              <span class="rappel__quoi">
+                article{{ d.alertes.articlesEnRupture > 1 ? 's' : '' }} en rupture
+              </span>
+            </li>
+          }
+          @if (d.alertes.articlesStockFaible > 0) {
+            <li class="rappel">
+              <span class="rappel__nombre montant">{{ d.alertes.articlesStockFaible }}</span>
+              <span class="rappel__quoi">
+                article{{ d.alertes.articlesStockFaible > 1 ? 's' : '' }} sous
+                {{ d.alertes.seuilStockFaible }} en stock
+              </span>
+            </li>
+          }
+          @if (d.alertes.paiementsEnCours > 0) {
+            <li class="rappel rappel--calme">
+              <span class="rappel__nombre montant">{{ d.alertes.paiementsEnCours }}</span>
+              <span class="rappel__quoi">
+                paiement{{ d.alertes.paiementsEnCours > 1 ? 's' : '' }} en cours de validation
+              </span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    <!-- ============ 2. Où on en est ============ -->
+    <section class="chiffres" aria-label="Chiffres de la période">
+      <app-stat
+        libelle="Chiffre d'affaires"
+        [valeur]="fcfa(d.ventes.chiffreAffaires)"
+        [evolution]="d.ventes.evolutionChiffreAffaires"
+        [accent]="true"
+      />
+      <app-stat
+        libelle="Commandes payées"
+        [valeur]="nombre(d.ventes.nombreCommandesPayees)"
+        [evolution]="d.ventes.evolutionCommandes"
+      />
+      <app-stat
+        libelle="Panier moyen"
+        [valeur]="fcfa(d.ventes.panierMoyen)"
+        [detail]="nombre(d.ventes.nombreArticlesVendus) + ' articles vendus'"
+      />
+      <app-stat
+        libelle="Taux de conversion"
+        [valeur]="pourcent(d.ventes.tauxConversion)"
+        [detail]="nombre(d.ventes.nombreCommandesCreees) + ' commandes créées'"
+      />
+    </section>
+
+    <div class="duo">
+      <!-- Courbe journalière -->
+      <section class="ad-carte graphe">
+        <div class="graphe__tete">
+          <h2 class="ad-carte__titre">Chiffre d'affaires par jour</h2>
+          <p class="graphe__sommet">Meilleur jour : {{ fcfa(sommetSerie()) }}</p>
+        </div>
+
+        @if (sommetSerie() === 0) {
+          <p class="ad-vide">Aucune vente sur la période.</p>
+        } @else {
+          <!-- Le graphique est décoratif : la table qui suit porte les
+               mêmes chiffres, lisible au clavier et au lecteur d'écran. -->
+          <div class="graphe__piste" aria-hidden="true">
+            @for (barre of barres(); track barre.jour) {
+              <div
+                class="graphe__colonne"
+                [title]="barre.etiquette + ' — ' + fcfa(barre.chiffreAffaires)"
+              >
+                <div class="graphe__barre" [style.height.%]="barre.hauteur"></div>
+              </div>
+            }
+          </div>
+          <div class="graphe__bornes" aria-hidden="true">
+            <span>{{ barres()[0].etiquette }}</span>
+            <span>{{ barres()[barres().length - 1].etiquette }}</span>
+          </div>
+
+          <details class="graphe__table">
+            <summary>Voir les chiffres jour par jour</summary>
+            <table class="ad-tableau">
+              <thead>
+                <tr>
+                  <th scope="col">Jour</th>
+                  <th scope="col">Chiffre d'affaires</th>
+                  <th scope="col">Commandes</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (barre of barres(); track barre.jour) {
+                  <tr>
+                    <td data-libelle="Jour" class="ad-tableau__fort">{{ barre.etiquette }}</td>
+                    <td data-libelle="Chiffre d'affaires">{{ fcfa(barre.chiffreAffaires) }}</td>
+                    <td data-libelle="Commandes">{{ barre.nombreCommandes }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </details>
+        }
+      </section>
+
+      <!-- Aujourd'hui -->
+      <section class="ad-carte jour">
+        <h2 class="ad-carte__titre">Aujourd'hui</h2>
+        <dl class="jour__liste">
+          <div class="jour__ligne">
+            <dt>Chiffre d'affaires</dt>
+            <dd class="montant">{{ fcfa(d.aujourdhui.chiffreAffaires) }}</dd>
+          </div>
+          <div class="jour__ligne">
+            <dt>Commandes reçues</dt>
+            <dd class="montant">{{ d.aujourdhui.nombreCommandes }}</dd>
+          </div>
+          <div class="jour__ligne">
+            <dt>Dont payées</dt>
+            <dd class="montant">{{ d.aujourdhui.nombreCommandesPayees }}</dd>
+          </div>
+          <div class="jour__ligne">
+            <dt>Nouveaux clients</dt>
+            <dd class="montant">{{ d.aujourdhui.nouveauxClients }}</dd>
+          </div>
+        </dl>
+
+        <h3 class="jour__sous etiquette">Clients</h3>
+        <dl class="jour__liste">
+          <div class="jour__ligne">
+            <dt>Comptes au total</dt>
+            <dd class="montant">{{ nombre(d.clients.total) }}</dd>
+          </div>
+          <div class="jour__ligne">
+            <dt>Nouveaux sur la période</dt>
+            <dd class="montant">{{ nombre(d.clients.nouveauxSurPeriode) }}</dd>
+          </div>
+          @if (d.clients.bloques > 0) {
+            <div class="jour__ligne">
+              <dt>Comptes bloqués</dt>
+              <dd class="montant jour__alerte">{{ nombre(d.clients.bloques) }}</dd>
+            </div>
+          }
+        </dl>
+      </section>
+    </div>
+
+    <!-- ============ 3. Pourquoi ============ -->
+    <div class="duo">
+      <!-- Opérateurs -->
+      <section class="ad-carte">
+        <h2 class="ad-carte__titre">Paiements par opérateur</h2>
+        <p class="carte__appui">
+          Taux de réussite global :
+          <strong>{{ pourcent(d.paiements.tauxReussiteGlobal) }}</strong>
+        </p>
+
+        @if (d.paiements.parFournisseur.length === 0) {
+          <p class="ad-vide">Aucun paiement sur la période.</p>
+        } @else {
+          <ul class="operateurs">
+            @for (f of d.paiements.parFournisseur; track f.fournisseur) {
+              <li class="operateur">
+                <div class="operateur__tete">
+                  <app-marque-paiement [fournisseur]="f.fournisseur" />
+                  <span class="operateur__taux montant">{{ pourcent(f.tauxReussite) }}</span>
+                </div>
+                <div
+                  class="operateur__jauge"
+                  role="img"
+                  [attr.aria-label]="f.libelle + ' : ' + pourcent(f.tauxReussite) + ' de réussite'"
+                >
+                  <span class="operateur__part" [style.width.%]="f.tauxReussite"></span>
+                </div>
+                <p class="operateur__detail">
+                  {{ f.reussis }} réussis sur {{ f.total }} —
+                  {{ fcfa(f.montantEncaisse) }} encaissés
+                </p>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (motifsEchec().length > 0) {
+          <h3 class="carte__sous etiquette">Motifs d'échec</h3>
+          <ul class="motifs">
+            @for (motif of motifsEchec(); track motif.code) {
+              <li class="motif">
+                <span>{{ motif.libelle }}</span>
+                <span class="motif__nombre montant">{{ motif.nombre }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <!-- Commandes par statut -->
+      <section class="ad-carte">
+        <h2 class="ad-carte__titre">Commandes par statut</h2>
+        @if (statutsCommande().length === 0) {
+          <p class="ad-vide">Aucune commande sur la période.</p>
+        } @else {
+          <ul class="statuts">
+            @for (s of statutsCommande(); track s.cle) {
+              <li class="statut">
+                <div class="statut__tete">
+                  <span class="statut__nom">{{ s.libelle }}</span>
+                  <span class="statut__nombre montant">{{ s.nombre }}</span>
+                </div>
+                <div class="statut__jauge" aria-hidden="true">
+                  <span class="statut__part" [style.width.%]="s.part"></span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (d.alertes.stockFaible.length > 0) {
+          <h3 class="carte__sous etiquette">Stock à surveiller</h3>
+          <ul class="stocks">
+            @for (article of d.alertes.stockFaible; track article.idArticle) {
+              <li class="stock">
+                <span class="stock__nom">{{ article.libelle }}</span>
+                <span
+                  class="stock__reste montant"
+                  [class.est-rupture]="(article.stock ?? 0) === 0"
+                >
+                  {{ article.stock ?? 0 }}
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    </div>
+
+    <div class="trio">
+      <section class="ad-carte">
+        <h2 class="ad-carte__titre">Meilleurs articles</h2>
+        @if (d.meilleursArticles.length === 0) {
+          <p class="ad-vide">Aucune vente sur la période.</p>
+        } @else {
+          <ol class="classement">
+            @for (article of d.meilleursArticles; track article.idArticle) {
+              <li class="classement__ligne">
+                <span class="classement__nom">{{ article.libelle }}</span>
+                <span class="classement__chiffre">
+                  <span class="montant">{{ article.quantiteTotaleVendue }}</span> vendus
+                  <span class="classement__ca">{{ fcfa(article.chiffreAffaires) }}</span>
+                </span>
+              </li>
+            }
+          </ol>
+        }
+      </section>
+
+      <section class="ad-carte">
+        <h2 class="ad-carte__titre">Meilleurs clients</h2>
+        @if (d.meilleursClients.length === 0) {
+          <p class="ad-vide">Aucun client n'a encore acheté sur la période.</p>
+        } @else {
+          <ol class="classement">
+            @for (client of d.meilleursClients; track client.idClient) {
+              <li class="classement__ligne">
+                <span class="classement__nom">
+                  {{ client.nom }}
+                  <span class="classement__appui">{{ client.email }}</span>
+                </span>
+                <span class="classement__chiffre">
+                  <span class="montant">{{ client.nombreCommandes }}</span> commandes
+                  <span class="classement__ca">{{ fcfa(client.totalDepense) }}</span>
+                </span>
+              </li>
+            }
+          </ol>
+        }
+      </section>
+
+      <section class="ad-carte">
+        <h2 class="ad-carte__titre">Chiffre d'affaires par rayon</h2>
+        @if (d.caParCategorie.length === 0) {
+          <p class="ad-vide">Aucune vente sur la période.</p>
+        } @else {
+          <ol class="classement">
+            @for (rayon of d.caParCategorie; track rayon.idCategorie) {
+              <li class="classement__ligne">
+                <span class="classement__nom">{{ rayon.nomCategorie }}</span>
+                <span class="classement__chiffre">
+                  <span class="montant">{{ rayon.quantiteVendue }}</span> articles
+                  <span class="classement__ca">{{ fcfa(rayon.chiffreAffaires) }}</span>
+                </span>
+              </li>
+            }
+          </ol>
+        }
+      </section>
+    </div>
+  }
+</div>

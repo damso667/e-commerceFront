@@ -1,0 +1,42 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* La hauteur est pilotee par l'ecran hote via --mp-h : le bouton de
+   paiement veut une marque confortable, le pied de page une marque
+   discrete, et aucun des deux ne doit modifier ce composant. */
+.mp {
+  display: block;
+  height: var(--mp-h, 22px);
+  width: auto;
+}
+
+.mp__tuile {
+  font-family: var(--police);
+  font-weight: 800;
+}
+
+.mp__tuile--mtn {
+  font-size: 17px;
+  letter-spacing: 0.4px;
+  fill: #141414;
+}
+
+/* Proportion du logo Orange : un petit mot blanc dans un carre plein.
+   Garder cette echelle est ce qui le rend reconnaissable au premier coup
+   d'oeil, meme quand le mot lui-meme n'est plus lisible. */
+.mp__tuile--orange {
+  /* 8.4 px mesure 30 px de large dans une tuile de 32 : le mot remplit le
+     carre sans en deborder, comme sur le logo d'origine. */
+  font-size: 8.4px;
+  letter-spacing: 0;
+  fill: #ffffff;
+}
+
+.mp__mot {
+  font-family: var(--police);
+  font-size: 15px;
+  font-weight: 700;
+  fill: var(--texte);
+}

@@ -144,49 +144,62 @@
       @if (slogan()) {
         <p class="pied__slogan">{{ slogan() }}</p>
       }
-      @if (paiementSimule()) {
-        <p class="pied__mention">
-          Mode démonstration : les paiements sont simulés, aucun argent n'est
-          débité.
-        </p>
-      }
     </div>
 
-    <div class="pied__bloc">
-      <h2 class="pied__titre etiquette">Boutique</h2>
-      <a routerLink="/catalogue">Tout le catalogue</a>
-      @if (connecte()) {
-        <a routerLink="/mes-commandes">Mes commandes</a>
-        <a routerLink="/panier">Mon panier</a>
-      } @else {
-        <a routerLink="/inscription">Créer un compte</a>
-        <a routerLink="/connexion">Se connecter</a>
-      }
+    <!-- Sur telephone, les deux colonnes de liens tiennent cote a cote :
+         empilees, elles faisaient a elles seules un ecran de defilement. -->
+    <div class="pied__liens">
+      <nav class="pied__bloc" aria-label="Boutique">
+        <h2 class="pied__titre etiquette">Boutique</h2>
+        <a routerLink="/catalogue">Tout le catalogue</a>
+        @if (connecte()) {
+          <a routerLink="/mes-commandes">Mes commandes</a>
+          <a routerLink="/panier">Mon panier</a>
+        } @else {
+          <a routerLink="/inscription">Créer un compte</a>
+          <a routerLink="/connexion">Se connecter</a>
+        }
+      </nav>
+
+      <div class="pied__bloc">
+        <h2 class="pied__titre etiquette">Contact</h2>
+        @if (telephone()) {
+          <a [href]="'tel:' + telephone()">{{ telephone() }}</a>
+        }
+        @if (email()) {
+          <a [href]="'mailto:' + email()">{{ email() }}</a>
+        }
+        @if (adresse()) {
+          <p class="pied__adresse">{{ adresse() }}</p>
+        }
+        @if (!telephone() && !email() && !adresse()) {
+          <p class="pied__absent">
+            Aucun contact renseigné. L'administrateur peut l'ajouter depuis
+            le back-office.
+          </p>
+        }
+      </div>
     </div>
 
-    <div class="pied__bloc">
-      <h2 class="pied__titre etiquette">Paiement</h2>
-      <p>MTN Mobile Money</p>
-      <p>Orange Money</p>
+    <!-- Les marques des operateurs valent mieux que leurs noms ecrits : un
+         acheteur reconnait le jaune MTN et le carre Orange avant d'avoir
+         lu quoi que ce soit, et c'est la question qu'il se pose ici. -->
+    <div class="pied__bloc pied__bloc--paiement">
+      <h2 class="pied__titre etiquette">Paiement accepté</h2>
+      <ul class="pied__operateurs">
+        <li><app-marque-paiement fournisseur="MTN_MOMO" /></li>
+        <li><app-marque-paiement fournisseur="ORANGE_MONEY" /></li>
+      </ul>
     </div>
+  </div>
 
-    <div class="pied__bloc">
-      <h2 class="pied__titre etiquette">Contact</h2>
-      @if (telephone()) {
-        <a [href]="'tel:' + telephone()">{{ telephone() }}</a>
-      }
-      @if (email()) {
-        <a [href]="'mailto:' + email()">{{ email() }}</a>
-      }
-      @if (adresse()) {
-        <p>{{ adresse() }}</p>
-      }
-      @if (!telephone() && !email() && !adresse()) {
-        <p class="pied__absent">
-          Aucun contact renseigné. L'administrateur peut l'ajouter depuis le
-          back-office.
-        </p>
-      }
-    </div>
+  <div class="contenu pied__bas">
+    <p class="pied__droits">© {{ annee }} {{ nom() }}</p>
+    @if (paiementSimule()) {
+      <p class="pied__mention">
+        Mode démonstration : les paiements sont simulés, aucun argent n'est
+        débité.
+      </p>
+    }
   </div>
 </footer>

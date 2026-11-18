@@ -1,0 +1,251 @@
+<div class="ad-page">
+  <header class="ad-entete">
+    <div>
+      <h1 class="ad-entete__titre">Clients</h1>
+      <p class="ad-entete__sous">
+        Comptes, historique d'achat, blocage et rôles.
+      </p>
+    </div>
+  </header>
+
+  @if (message(); as texte) {
+    <app-alerte [message]="texte" ton="succes" />
+  }
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" />
+  }
+
+  <form class="ad-filtres" (submit)="$event.preventDefault(); appliquer()">
+    <div class="champ">
+      <label class="champ__libelle" for="cl-recherche">Rechercher</label>
+      <input
+        id="cl-recherche"
+        class="champ__saisie"
+        type="search"
+        placeholder="Nom, email, téléphone…"
+        [value]="recherche()"
+        (input)="recherche.set($any($event.target).value)"
+      />
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="cl-role">Rôle</label>
+      <select
+        id="cl-role"
+        class="ad-select"
+        [value]="role()"
+        (change)="role.set($any($event.target).value); appliquer()"
+      >
+        <option value="">Tous les rôles</option>
+        <option value="USER">Client</option>
+        <option value="ADMIN">Administrateur</option>
+      </select>
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="cl-actif">État du compte</label>
+      <select
+        id="cl-actif"
+        class="ad-select"
+        [value]="actif()"
+        (change)="actif.set($any($event.target).value); appliquer()"
+      >
+        <option value="">Tous les comptes</option>
+        <option value="oui">Actifs</option>
+        <option value="non">Bloqués</option>
+      </select>
+    </div>
+
+    <div class="ad-filtres__action">
+      <button type="submit" class="bouton bouton--plein">Rechercher</button>
+      @if (filtreActif()) {
+        <button type="button" class="bouton bouton--sobre" (click)="reinitialiser()">
+          Effacer
+        </button>
+      }
+    </div>
+  </form>
+
+  <section class="ad-carte liste">
+    @if (chargement()) {
+      <app-squelette forme="texte" [nombre]="6" annonce="Chargement des clients" />
+    } @else if (aucunResultat()) {
+      <p class="ad-vide">
+        @if (filtreActif()) {
+          Aucun compte ne correspond à ces critères.
+        } @else {
+          Aucun compte pour l'instant.
+        }
+      </p>
+    } @else {
+      <table class="ad-tableau">
+        <caption class="lecteur-seul">Liste des comptes clients</caption>
+        <thead>
+          <tr>
+            <th scope="col">Client</th>
+            <th scope="col">Téléphone</th>
+            <th scope="col">Rôle</th>
+            <th scope="col">État</th>
+            <th scope="col"><span class="lecteur-seul">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (client of page().contenu; track client.id) {
+            <tr [class.est-ouverte]="ouvert() === client.id">
+              <td data-libelle="Client">
+                <span class="ad-tableau__fort">{{ nomComplet(client) }}</span>
+                <span class="ad-appui">{{ client.email }}</span>
+              </td>
+              <td data-libelle="Téléphone">{{ client.numeroTelephone ?? '—' }}</td>
+              <td data-libelle="Rôle">
+                <app-tampon
+                  [texte]="client.role === 'ADMIN' ? 'Administrateur' : 'Client'"
+                  [petit]="true"
+                />
+              </td>
+              <td data-libelle="État">
+                <span class="etat" [class.est-bloque]="!client.actif">
+                  {{ client.actif ? 'Actif' : 'Bloqué' }}
+                </span>
+              </td>
+              <td class="ad-tableau__actions">
+                <button
+                  type="button"
+                  class="ad-mini"
+                  [attr.aria-expanded]="ouvert() === client.id"
+                  (click)="basculer(client.id)"
+                >
+                  {{ ouvert() === client.id ? 'Replier' : 'Fiche' }}
+                </button>
+              </td>
+            </tr>
+
+            @if (ouvert() === client.id) {
+              <tr class="depli">
+                <td colspan="5">
+                  @if (detailEnCours()) {
+                    <app-squelette forme="texte" [nombre]="3" annonce="Chargement de la fiche" />
+                  } @else if (detail(); as d) {
+                    <div class="fiche">
+                      <div class="fiche__chiffres">
+                        <h3 class="fiche__titre etiquette">Son activité</h3>
+                        <dl class="paires">
+                          <div class="paire">
+                            <dt>Inscrit le</dt>
+                            <dd>{{ date(d.dateInscription) }}</dd>
+                          </div>
+                          <div class="paire">
+                            <dt>Commandes</dt>
+                            <dd class="montant">
+                              {{ d.nombreCommandes }}
+                              <span class="paire__appui">
+                                dont {{ d.nombreCommandesPayees }} payées
+                              </span>
+                            </dd>
+                          </div>
+                          <div class="paire">
+                            <dt>Total dépensé</dt>
+                            <dd class="paire__fort">
+                              <app-montant [valeur]="d.totalDepense" />
+                            </dd>
+                          </div>
+                          <div class="paire">
+                            <dt>Panier moyen</dt>
+                            <dd><app-montant [valeur]="d.panierMoyen" /></dd>
+                          </div>
+                          <div class="paire">
+                            <dt>Dernière commande</dt>
+                            <dd>{{ date(d.dateDerniereCommande) }}</dd>
+                          </div>
+                          @if (d.client.adresse) {
+                            <div class="paire">
+                              <dt>Adresse</dt>
+                              <dd>{{ d.client.adresse }}</dd>
+                            </div>
+                          }
+                        </dl>
+
+                        @if (d.panierEnCours && d.panierEnCours.lignes.length > 0) {
+                          <h3 class="fiche__titre etiquette">Panier en cours</h3>
+                          <ul class="panier">
+                            @for (ligne of d.panierEnCours.lignes; track ligne.idArticle) {
+                              <li class="panier__ligne">
+                                <span class="montant">{{ ligne.quantite }}×</span>
+                                <span class="panier__nom">{{ ligne.libelle }}</span>
+                                <app-montant [valeur]="ligne.sousTotal" [devise]="false" />
+                              </li>
+                            }
+                          </ul>
+                        }
+                      </div>
+
+                      <div class="fiche__cote">
+                        <h3 class="fiche__titre etiquette">Dernières commandes</h3>
+                        @if (d.dernieresCommandes.length === 0) {
+                          <p class="fiche__absent">Aucune commande.</p>
+                        } @else {
+                          <ul class="recentes">
+                            @for (c of d.dernieresCommandes; track c.idCommande) {
+                              <li class="recente">
+                                <span class="recente__id">nº {{ c.idCommande }}</span>
+                                <app-tampon [statutCommande]="c.statut" [petit]="true" />
+                                <app-montant
+                                  class="recente__montant"
+                                  [valeur]="c.montantTotal"
+                                  [devise]="false"
+                                />
+                              </li>
+                            }
+                          </ul>
+                        }
+
+                        <h3 class="fiche__titre etiquette">Administration</h3>
+                        <div class="fiche__actions">
+                          <button
+                            type="button"
+                            class="ad-mini"
+                            [class.ad-mini--danger]="d.client.actif"
+                            [disabled]="actionEnCours()"
+                            (click)="basculerActivation(d.client)"
+                          >
+                            {{ d.client.actif ? 'Bloquer le compte' : 'Débloquer le compte' }}
+                          </button>
+
+                          @if (d.client.role === 'USER') {
+                            <button
+                              type="button"
+                              class="ad-mini"
+                              [disabled]="actionEnCours()"
+                              (click)="changerRole(d.client, 'ADMIN')"
+                            >
+                              Passer administrateur
+                            </button>
+                          } @else {
+                            <button
+                              type="button"
+                              class="ad-mini"
+                              [disabled]="actionEnCours()"
+                              (click)="changerRole(d.client, 'USER')"
+                            >
+                              Retirer les droits d'administration
+                            </button>
+                          }
+                        </div>
+                        <p class="fiche__note">
+                          Bloquer empêche la connexion. L'historique et les
+                          commandes restent en base.
+                        </p>
+                      </div>
+                    </div>
+                  }
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+
+      <app-pagination [page]="page()" unite="client" (aller)="charger($event)" />
+    }
+  </section>
+</div>

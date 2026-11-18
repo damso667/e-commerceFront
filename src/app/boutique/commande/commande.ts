@@ -6,6 +6,7 @@ import { PaiementService } from '../../services/paiement.service';
 import { PanierService } from '../../services/panier.service';
 import { Alerte } from '../../ui/alerte/alerte';
 import { EtatVide } from '../../ui/etat-vide/etat-vide';
+import { MarquePaiement } from '../../ui/marque-paiement/marque-paiement';
 import { Montant } from '../../ui/montant/montant';
 import { Squelette } from '../../ui/squelette/squelette';
 
@@ -25,7 +26,7 @@ import { Squelette } from '../../ui/squelette/squelette';
 @Component({
   selector: 'app-commande',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Montant, Squelette, EtatVide, Alerte],
+  imports: [RouterLink, Montant, Squelette, EtatVide, Alerte, MarquePaiement],
   templateUrl: './commande.html',
   styleUrl: './commande.css',
 })

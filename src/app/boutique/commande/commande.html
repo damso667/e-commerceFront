@@ -70,7 +70,13 @@
                 [attr.aria-pressed]="fournisseur() === 'MTN_MOMO'"
                 (click)="choisirFournisseur('MTN_MOMO')"
               >
-                MTN Mobile Money
+                <app-marque-paiement fournisseur="MTN_MOMO" />
+                <span class="operateur__coche" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" focusable="false">
+                    <path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
               </button>
               <button
                 type="button"
@@ -79,7 +85,13 @@
                 [attr.aria-pressed]="fournisseur() === 'ORANGE_MONEY'"
                 (click)="choisirFournisseur('ORANGE_MONEY')"
               >
-                Orange Money
+                <app-marque-paiement fournisseur="ORANGE_MONEY" />
+                <span class="operateur__coche" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" focusable="false">
+                    <path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
               </button>
             </div>
           </fieldset>

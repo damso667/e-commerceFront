@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { CatalogueService } from '../../services/catalogue.service';
 import { PanierService } from '../../services/panier.service';
 import { ParametresService } from '../../services/parametres.service';
+import { MarquePaiement } from '../../ui/marque-paiement/marque-paiement';
 
 /**
  * Coque de la boutique : en-tête, contenu, pied de page.
@@ -27,7 +28,7 @@ import { ParametresService } from '../../services/parametres.service';
 @Component({
   selector: 'app-coque-boutique',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, MarquePaiement],
   templateUrl: './coque.html',
   styleUrl: './coque.css',
 })
@@ -56,6 +57,10 @@ export class CoqueBoutique {
 
   protected readonly horsLigne = this.reseau.estHorsLigne;
   protected readonly serveurSeReveille = this.reseau.serveurSeReveille;
+
+  /** Annee du bas de page. Calculee une fois : elle ne change pas en
+   *  cours de session, et un signal ici n'apporterait rien. */
+  protected readonly annee = new Date().getFullYear();
 
   protected readonly rayons = signal<Categorie[]>([]);
   protected readonly recherche = signal('');

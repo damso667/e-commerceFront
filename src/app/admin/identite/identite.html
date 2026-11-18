@@ -1,0 +1,257 @@
+<div class="ad-page">
+  <header class="ad-entete">
+    <div>
+      <h1 class="ad-entete__titre">Identité de la boutique</h1>
+      <p class="ad-entete__sous">
+        Nom, couleur, logo et icône de l'application. Tout change sans
+        redéploiement.
+      </p>
+    </div>
+  </header>
+
+  @if (message(); as texte) {
+    <app-alerte [message]="texte" ton="succes" />
+  }
+
+  <div class="duo">
+    <!-- ---------- Marque ---------- -->
+    <section class="ad-carte">
+      <h2 class="ad-carte__titre">Marque</h2>
+
+      @if (erreur(); as texte) {
+        <app-alerte [message]="texte" ton="echec" [champs]="champsInvalides()" />
+      }
+
+      <form class="forme" (submit)="$event.preventDefault(); enregistrer()">
+        <div class="champ">
+          <label class="champ__libelle" for="i-nom">Nom de la boutique</label>
+          <input
+            id="i-nom"
+            class="champ__saisie"
+            type="text"
+            maxlength="60"
+            required
+            [value]="nom()"
+            (input)="nom.set($any($event.target).value)"
+          />
+          <p class="champ__aide">
+            Apparaît dans l'en-tête, le pied de page, l'onglet du navigateur
+            et sous l'icône de l'application installée.
+          </p>
+        </div>
+
+        <div class="champ">
+          <label class="champ__libelle" for="i-slogan">Slogan</label>
+          <input
+            id="i-slogan"
+            class="champ__saisie"
+            type="text"
+            maxlength="120"
+            placeholder="Facultatif"
+            [value]="slogan()"
+            (input)="slogan.set($any($event.target).value)"
+          />
+        </div>
+
+        <!-- Une seule encre, pas une palette : c'est elle qui tient toute
+             l'interface, des boutons aux jauges du tableau de bord. -->
+        <fieldset class="couleur">
+          <legend class="champ__libelle">Couleur de la marque</legend>
+
+          <div class="couleur__ligne">
+            <input
+              class="couleur__pastille"
+              type="color"
+              aria-label="Choisir la couleur"
+              [value]="couleurValide() ? couleur() : '#0B6B5E'"
+              (input)="couleur.set($any($event.target).value.toUpperCase())"
+            />
+            <input
+              class="champ__saisie couleur__code montant"
+              type="text"
+              maxlength="7"
+              aria-label="Code hexadécimal de la couleur"
+              [attr.aria-invalid]="!couleurValide()"
+              [value]="couleur()"
+              (input)="couleur.set($any($event.target).value)"
+            />
+          </div>
+
+          @if (!couleurValide()) {
+            <p class="champ__erreur">
+              Code attendu : six chiffres hexadécimaux précédés d'un dièse,
+              par exemple #0B6B5E.
+            </p>
+          }
+
+          <ul class="couleur__suggestions">
+            @for (s of suggestions; track s.valeur) {
+              <li>
+                <button
+                  type="button"
+                  class="couleur__choix"
+                  [class.est-choisie]="couleur().toUpperCase() === s.valeur"
+                  [style.background]="s.valeur"
+                  [attr.aria-label]="s.nom"
+                  [title]="s.nom"
+                  (click)="couleur.set(s.valeur)"
+                ></button>
+              </li>
+            }
+          </ul>
+        </fieldset>
+
+        <div class="champ">
+          <label class="champ__libelle" for="i-accueil">Message d'accueil</label>
+          <textarea
+            id="i-accueil"
+            class="champ__saisie forme__texte"
+            rows="3"
+            maxlength="300"
+            placeholder="Affiché en haut de la page d'accueil"
+            [value]="messageAccueil()"
+            (input)="messageAccueil.set($any($event.target).value)"
+          ></textarea>
+        </div>
+
+        <h3 class="forme__sous etiquette">Contact</h3>
+
+        <div class="forme__paire">
+          <div class="champ">
+            <label class="champ__libelle" for="i-tel">Téléphone</label>
+            <input
+              id="i-tel"
+              class="champ__saisie"
+              type="tel"
+              maxlength="20"
+              placeholder="+237 6 77 12 34 56"
+              [value]="telephone()"
+              (input)="telephone.set($any($event.target).value)"
+            />
+          </div>
+
+          <div class="champ">
+            <label class="champ__libelle" for="i-email">Email</label>
+            <input
+              id="i-email"
+              class="champ__saisie"
+              type="email"
+              maxlength="120"
+              [value]="email()"
+              (input)="email.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+
+        <div class="champ">
+          <label class="champ__libelle" for="i-adresse">Adresse</label>
+          <input
+            id="i-adresse"
+            class="champ__saisie"
+            type="text"
+            maxlength="200"
+            [value]="adresse()"
+            (input)="adresse.set($any($event.target).value)"
+          />
+          <p class="champ__aide">
+            Laissé vide, le pied de page indique qu'aucun contact n'est
+            renseigné.
+          </p>
+        </div>
+
+        <div class="forme__actions">
+          <button type="submit" class="bouton bouton--plein" [disabled]="envoi() || !valide()">
+            {{ envoi() ? 'Enregistrement…' : 'Enregistrer' }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ---------- Images ---------- -->
+    <section class="ad-carte">
+      <h2 class="ad-carte__titre">Logo et icône</h2>
+
+      @if (erreurFichier(); as texte) {
+        <app-alerte [message]="texte" ton="echec" />
+      }
+
+      <p class="images__regle">
+        PNG, JPEG ou WebP, 512 Ko maximum. Le SVG est refusé : il peut
+        contenir du script et serait servi depuis l'origine de l'API.
+      </p>
+
+      <!-- Logo -->
+      <div class="image">
+        <h3 class="image__titre etiquette">Logo</h3>
+        <div class="image__corps">
+          <div class="image__apercu image__apercu--logo">
+            @if (logoAffiche(); as src) {
+              <img [src]="src" [alt]="'Logo de ' + parametres().nom" />
+            } @else {
+              <span class="image__mono logotype">{{ monogramme() }}</span>
+            }
+          </div>
+
+          <div class="image__actions">
+            <label class="bouton bouton--contour image__bouton">
+              {{ envoiLogo() ? 'Envoi…' : 'Choisir un fichier' }}
+              <input
+                type="file"
+                class="image__champ"
+                accept="image/png,image/jpeg,image/webp"
+                [disabled]="envoiLogo()"
+                (change)="deposerLogo($event)"
+              />
+            </label>
+            @if (parametres().logoUrl) {
+              <button type="button" class="ad-mini ad-mini--danger" (click)="retirerLogo()">
+                Retirer
+              </button>
+            }
+            <p class="image__note">
+              Format libre, lisible sur fond clair. Sans logo, le nom de la
+              boutique s'affiche à sa place.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Icône -->
+      <div class="image">
+        <h3 class="image__titre etiquette">Icône de l'application</h3>
+        <div class="image__corps">
+          <div class="image__apercu image__apercu--icone">
+            @if (parametres().iconeUrl; as src) {
+              <img [src]="src" alt="Icône de l'application" />
+            } @else {
+              <span class="image__mono logotype">{{ monogramme() }}</span>
+            }
+          </div>
+
+          <div class="image__actions">
+            <label class="bouton bouton--contour image__bouton">
+              {{ envoiIcone() ? 'Envoi…' : 'Choisir un fichier' }}
+              <input
+                type="file"
+                class="image__champ"
+                accept="image/png,image/jpeg,image/webp"
+                [disabled]="envoiIcone()"
+                (change)="deposerIcone($event)"
+              />
+            </label>
+            @if (parametres().iconeUrl) {
+              <button type="button" class="ad-mini ad-mini--danger" (click)="retirerIcone()">
+                Retirer
+              </button>
+            }
+            <p class="image__note">
+              Carrée, 512 × 512 de préférence. C'est elle qui apparaît sur
+              l'écran d'accueil du téléphone : le manifeste de l'application
+              est engendré depuis la base, pas figé au build.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

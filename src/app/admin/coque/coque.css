@@ -1,0 +1,222 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--fond-doux);
+}
+
+.adm {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ---------- En-tête ---------- */
+
+.adm__tete {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e4);
+  padding: var(--e3) var(--e4);
+  background: var(--fond);
+  border-bottom: 1px solid var(--trait);
+}
+
+@media (min-width: 1000px) {
+  .adm__tete {
+    padding: var(--e3) var(--e6);
+  }
+}
+
+.adm__marque {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  text-decoration: none;
+  min-width: 0;
+}
+
+.adm__logo {
+  height: 30px;
+  width: auto;
+  max-width: 130px;
+  object-fit: contain;
+}
+
+.adm__mono {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--rayon);
+  background: var(--encre);
+  color: var(--texte-inverse);
+  font-size: var(--t-moyen);
+}
+
+.adm__intitule {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.adm__nom {
+  font-weight: 700;
+  font-size: var(--t-petit);
+  color: var(--texte);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adm__role {
+  color: var(--texte-faible);
+  font-size: var(--t-micro);
+}
+
+.adm__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  flex-shrink: 0;
+}
+
+.adm__lien {
+  min-height: 44px;
+  padding: 0 var(--e3);
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--texte-doux);
+  text-decoration: none;
+  border-radius: var(--rayon);
+  white-space: nowrap;
+}
+
+.adm__lien:hover {
+  background: var(--fond-doux);
+  color: var(--encre);
+}
+
+/* Sur téléphone, « Voir la boutique » est le moins urgent des deux liens :
+   il cède la place plutôt que de comprimer le nom de la boutique. */
+@media (max-width: 519px) {
+  .adm__lien:not(:last-child) {
+    display: none;
+  }
+}
+
+/* ---------- Corps ---------- */
+
+.adm__corps {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (min-width: 1000px) {
+  .adm__corps {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* ---------- Navigation ---------- */
+
+.adm__nav {
+  position: sticky;
+  top: 59px;
+  z-index: 10;
+  background: var(--fond);
+  border-bottom: 1px solid var(--trait);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.adm__nav::-webkit-scrollbar {
+  display: none;
+}
+
+.adm__liste {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--e3);
+  display: flex;
+  gap: var(--e1);
+  white-space: nowrap;
+}
+
+.adm__rubrique {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 var(--e3);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--texte-doux);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color var(--duree-courte) var(--sortie);
+}
+
+.adm__rubrique:hover {
+  color: var(--texte);
+}
+
+.adm__rubrique.est-actif {
+  color: var(--encre);
+  border-bottom-color: var(--encre);
+}
+
+@media (min-width: 1000px) {
+  .adm__nav {
+    top: 63px;
+    flex: 0 0 218px;
+    align-self: flex-start;
+    max-height: calc(100dvh - 63px);
+    overflow-y: auto;
+    overflow-x: visible;
+    border-bottom: none;
+    border-right: 1px solid var(--trait);
+    padding-block: var(--e4);
+  }
+
+  .adm__liste {
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 var(--e3);
+    white-space: normal;
+  }
+
+  .adm__rubrique {
+    width: 100%;
+    min-height: 42px;
+    border-bottom: none;
+    border-radius: var(--rayon);
+  }
+
+  .adm__rubrique.est-actif {
+    background: var(--encre-brume);
+    box-shadow: inset 2px 0 0 var(--encre);
+  }
+}
+
+/* ---------- Panneau ---------- */
+
+.adm__panneau {
+  flex: 1;
+  min-width: 0;
+  padding: var(--e5) var(--e4) var(--e8);
+}
+
+@media (min-width: 1000px) {
+  .adm__panneau {
+    padding: var(--e6) var(--e6) var(--e9);
+  }
+}

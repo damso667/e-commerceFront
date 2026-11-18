@@ -1,0 +1,127 @@
+<div class="ad-page">
+  <header class="ad-entete">
+    <div>
+      <h1 class="ad-entete__titre">Journal d'audit</h1>
+      <p class="ad-entete__sous">
+        Qui a fait quoi, et quand. En lecture seule : une trace qu'on peut
+        effacer n'est pas une trace.
+      </p>
+    </div>
+  </header>
+
+  <form class="ad-filtres" (submit)="$event.preventDefault(); appliquer()">
+    <div class="champ">
+      <label class="champ__libelle" for="j-acteur">Auteur</label>
+      <input
+        id="j-acteur"
+        class="champ__saisie"
+        type="search"
+        placeholder="Email de l'administrateur"
+        [value]="acteur()"
+        (input)="acteur.set($any($event.target).value)"
+      />
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="j-action">Action</label>
+      <select
+        id="j-action"
+        class="ad-select"
+        [value]="action()"
+        (change)="action.set($any($event.target).value); appliquer()"
+      >
+        <option value="">Toutes les actions</option>
+        @for (a of actionsConnues; track a.cle) {
+          <option [value]="a.cle">{{ a.libelle }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="j-debut">Du</label>
+      <input
+        id="j-debut"
+        class="champ__saisie"
+        type="date"
+        [value]="debut()"
+        (change)="debut.set($any($event.target).value); appliquer()"
+      />
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="j-fin">Au</label>
+      <input
+        id="j-fin"
+        class="champ__saisie"
+        type="date"
+        [value]="fin()"
+        (change)="fin.set($any($event.target).value); appliquer()"
+      />
+    </div>
+
+    <div class="ad-filtres__action">
+      <button type="submit" class="bouton bouton--plein">Filtrer</button>
+      @if (filtreActif()) {
+        <button type="button" class="bouton bouton--sobre" (click)="reinitialiser()">
+          Effacer
+        </button>
+      }
+    </div>
+  </form>
+
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" [reessayable]="true" (reessayer)="charger(0)" />
+  }
+
+  <section class="ad-carte liste">
+    @if (chargement()) {
+      <app-squelette forme="texte" [nombre]="8" annonce="Chargement du journal" />
+    } @else if (aucunResultat()) {
+      <p class="ad-vide">
+        @if (filtreActif()) {
+          Aucune entrée ne correspond à ces critères.
+        } @else {
+          Le journal est vide. Il se remplira à la première modification.
+        }
+      </p>
+    } @else {
+      <table class="ad-tableau">
+        <caption class="lecteur-seul">Journal des modifications du back-office</caption>
+        <thead>
+          <tr>
+            <th scope="col">Quand</th>
+            <th scope="col">Qui</th>
+            <th scope="col">Action</th>
+            <th scope="col">Sur quoi</th>
+            <th scope="col">Détail</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entree of page().contenu; track entree.id) {
+            <tr>
+              <td data-libelle="Quand" class="journal__date">
+                {{ horodatage(entree.dateAction) }}
+              </td>
+              <td data-libelle="Qui" class="ad-tableau__fort">{{ entree.acteur }}</td>
+              <td data-libelle="Action">
+                <span class="journal__action" [class.est-sensible]="estSensible(entree.action)">
+                  {{ libelle(entree.action) }}
+                </span>
+              </td>
+              <td data-libelle="Sur quoi">{{ cible(entree) }}</td>
+              <td data-libelle="Détail" class="journal__details">
+                {{ entree.details ?? '—' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <app-pagination
+        [page]="page()"
+        unite="entrée"
+        (aller)="charger($event)"
+      />
+    }
+  </section>
+</div>

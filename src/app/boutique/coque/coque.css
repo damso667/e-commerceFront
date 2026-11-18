@@ -373,35 +373,41 @@
    Pied de page
    ============================================================ */
 
+/* Sur telephone, le pied etait une colonne unique de quatre blocs empiles :
+   presque un ecran entier de texte gris a faire defiler avant d'atteindre
+   la fin. Il tient maintenant en trois rangs, et les liens se partagent la
+   largeur au lieu de se suivre. */
+
 .pied {
-  margin-top: var(--e9);
+  margin-top: var(--e8);
   border-top: 1px solid var(--trait);
   background: var(--fond-doux);
-  padding-block: var(--e8);
+  padding-block: var(--e6);
 }
 
 .pied__rang {
   display: grid;
-  gap: var(--e7) var(--e6);
+  gap: var(--e5);
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 620px) {
-  .pied__rang {
-    grid-template-columns: repeat(2, 1fr);
+@media (min-width: 760px) {
+  .pied {
+    margin-top: var(--e9);
+    padding-block: var(--e8);
   }
-}
 
-@media (min-width: 1000px) {
   .pied__rang {
     grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    gap: var(--e6);
+    align-items: start;
   }
 }
 
 .pied__identite {
   display: flex;
   flex-direction: column;
-  gap: var(--e3);
+  gap: var(--e2);
 }
 
 .pied__nom {
@@ -410,10 +416,11 @@
 }
 
 .pied__logo {
-  height: 38px;
+  height: 34px;
   width: auto;
-  max-width: 220px;
+  max-width: 200px;
   object-fit: contain;
+  align-self: flex-start;
 }
 
 .pied__slogan {
@@ -422,24 +429,31 @@
   max-width: 36ch;
 }
 
-.pied__mention {
-  font-size: var(--t-micro);
-  color: var(--texte-faible);
-  max-width: 36ch;
-  padding-top: var(--e2);
-  border-top: 1px solid var(--trait);
+/* Deux colonnes sur telephone ; au-dela, les blocs rejoignent la grille du
+   rang et deviennent de vraies colonnes de pied de page. */
+.pied__liens {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--e5) var(--e4);
+}
+
+@media (min-width: 760px) {
+  .pied__liens {
+    display: contents;
+  }
 }
 
 .pied__bloc {
   display: flex;
   flex-direction: column;
-  gap: var(--e2);
+  gap: var(--e1);
   font-size: var(--t-petit);
   color: var(--texte-doux);
+  min-width: 0;
 }
 
 .pied__titre {
-  margin-bottom: var(--e1);
+  margin-bottom: var(--e2);
   color: var(--texte);
 }
 
@@ -447,9 +461,17 @@
   text-decoration: none;
   color: var(--texte-doux);
   width: fit-content;
-  min-height: 32px;
+  max-width: 100%;
+  /* 44 px : au pouce, 32 px faisait rater une ligne sur deux. */
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
+}
+
+@media (min-width: 760px) and (pointer: fine) {
+  .pied__bloc a {
+    min-height: 30px;
+  }
 }
 
 .pied__bloc a:hover {
@@ -457,8 +479,52 @@
   text-decoration: underline;
 }
 
+.pied__adresse {
+  padding-block: var(--e2);
+  max-width: 30ch;
+}
+
 .pied__absent {
   color: var(--texte-faible);
   font-size: var(--t-micro);
   max-width: 30ch;
+  padding-top: var(--e2);
+}
+
+.pied__operateurs {
+  list-style: none;
+  margin: 0;
+  padding: var(--e1) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e3) var(--e5);
+  --mp-h: 22px;
+}
+
+/* ---------- Bas de page ---------- */
+
+.pied__bas {
+  margin-top: var(--e6);
+  padding-top: var(--e4);
+  border-top: 1px solid var(--trait);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e2) var(--e5);
+}
+
+.pied__droits {
+  font-size: var(--t-micro);
+  color: var(--texte-doux);
+}
+
+/* La mention de demonstration est une note de bas de page, pas une
+   accroche : au milieu du bloc d'identite, elle passait avant la
+   navigation et coupait le logo du reste. */
+.pied__mention {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  max-width: 46ch;
 }

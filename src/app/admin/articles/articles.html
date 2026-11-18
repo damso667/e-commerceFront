@@ -1,0 +1,406 @@
+<div class="ad-page">
+  <header class="ad-entete">
+    <div>
+      <h1 class="ad-entete__titre">Catalogue</h1>
+      <p class="ad-entete__sous">Articles, stock et rayons.</p>
+    </div>
+    <div class="ad-entete__actions">
+      <button
+        type="button"
+        class="bouton bouton--contour"
+        [attr.aria-expanded]="rayonsOuverts()"
+        (click)="rayonsOuverts.set(!rayonsOuverts())"
+      >
+        Rayons ({{ categories().length }})
+      </button>
+      <button type="button" class="bouton bouton--plein" (click)="ouvrirCreation()">
+        Nouvel article
+      </button>
+    </div>
+  </header>
+
+  @if (message(); as texte) {
+    <app-alerte [message]="texte" ton="succes" />
+  }
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" />
+  }
+
+  <!-- ---------- Rayons ---------- -->
+  @if (rayonsOuverts()) {
+    <section class="ad-carte rayons">
+      <h2 class="ad-carte__titre">Rayons</h2>
+
+      @if (erreurRayon(); as texte) {
+        <app-alerte [message]="texte" ton="echec" />
+      }
+
+      <ul class="rayons__liste">
+        @for (rayon of categories(); track rayon.idCategorie) {
+          <li class="rayon">
+            <span class="rayon__nom">{{ rayon.nomCategorie }}</span>
+            @if (rayon.nombreArticles !== undefined) {
+              <span class="rayon__compte">{{ rayon.nombreArticles }} articles</span>
+            }
+            <button
+              type="button"
+              class="ad-mini ad-mini--danger"
+              (click)="supprimerRayon(rayon)"
+            >
+              Supprimer
+            </button>
+          </li>
+        }
+        @if (categories().length === 0) {
+          <li class="ad-vide">Aucun rayon. Créez-en un pour ranger les articles.</li>
+        }
+      </ul>
+
+      <form class="rayons__ajout" (submit)="$event.preventDefault(); creerRayon()">
+        <div class="champ">
+          <label class="champ__libelle" for="nouveau-rayon">Nouveau rayon</label>
+          <input
+            id="nouveau-rayon"
+            class="champ__saisie"
+            type="text"
+            maxlength="60"
+            placeholder="Électroménager, Vêtements…"
+            [value]="nouveauRayon()"
+            (input)="nouveauRayon.set($any($event.target).value)"
+          />
+        </div>
+        <button
+          type="submit"
+          class="bouton bouton--contour"
+          [disabled]="envoiRayon() || nouveauRayon().trim().length < 2"
+        >
+          Ajouter
+        </button>
+      </form>
+    </section>
+  }
+
+  <!-- ---------- Formulaire d'article ---------- -->
+  @if (formulaireOuvert()) {
+    <section class="ad-carte forme">
+      <h2 class="ad-carte__titre">{{ titreFormulaire() }}</h2>
+
+      @if (erreurFormulaire(); as texte) {
+        <app-alerte [message]="texte" ton="echec" [champs]="champsInvalides()" />
+      }
+
+      <form class="forme__grille" (submit)="$event.preventDefault(); enregistrer()">
+        <div class="champ forme__large">
+          <label class="champ__libelle" for="a-libelle">Libellé</label>
+          <input
+            id="a-libelle"
+            class="champ__saisie"
+            type="text"
+            maxlength="120"
+            required
+            [value]="brouillon().libelle"
+            (input)="majBrouillon('libelle', $any($event.target).value)"
+          />
+        </div>
+
+        <div class="champ">
+          <label class="champ__libelle" for="a-rayon">Rayon</label>
+          <select
+            id="a-rayon"
+            class="ad-select"
+            required
+            [value]="brouillon().idCategorie"
+            (change)="majBrouillon('idCategorie', $any($event.target).value)"
+          >
+            <option value="" disabled>Choisir un rayon</option>
+            @for (rayon of categories(); track rayon.idCategorie) {
+              <option [value]="rayon.idCategorie">{{ rayon.nomCategorie }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="champ">
+          <label class="champ__libelle" for="a-prix">Prix (FCFA)</label>
+          <input
+            id="a-prix"
+            class="champ__saisie"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            step="1"
+            required
+            [value]="brouillon().prix"
+            (input)="majBrouillon('prix', $any($event.target).value)"
+          />
+        </div>
+
+        <div class="champ">
+          <label class="champ__libelle" for="a-stock">Stock</label>
+          <input
+            id="a-stock"
+            class="champ__saisie"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            step="1"
+            required
+            [value]="brouillon().stock"
+            (input)="majBrouillon('stock', $any($event.target).value)"
+          />
+          @if (brouillon().idArticle !== null) {
+            <p class="champ__aide">
+              Pour un réapprovisionnement, préférez « Stock » dans la liste :
+              l'ajustement se fait par variation et ne peut pas écraser une
+              vente survenue entre-temps.
+            </p>
+          }
+        </div>
+
+        <div class="champ forme__large">
+          <label class="champ__libelle" for="a-image">Adresse de l'image</label>
+          <input
+            id="a-image"
+            class="champ__saisie"
+            type="url"
+            placeholder="https://…"
+            [value]="brouillon().imageUrl"
+            (input)="majBrouillon('imageUrl', $any($event.target).value)"
+          />
+          <p class="champ__aide">
+            Facultatif. Sans image, la boutique affiche un visuel de
+            remplacement portant le nom de l'article.
+          </p>
+        </div>
+
+        <div class="champ forme__large">
+          <label class="champ__libelle" for="a-description">Description</label>
+          <textarea
+            id="a-description"
+            class="champ__saisie forme__texte"
+            rows="4"
+            maxlength="2000"
+            [value]="brouillon().description"
+            (input)="majBrouillon('description', $any($event.target).value)"
+          ></textarea>
+        </div>
+
+        <div class="forme__actions forme__large">
+          <button
+            type="submit"
+            class="bouton bouton--plein"
+            [disabled]="envoi() || !formulaireValide()"
+          >
+            {{ envoi() ? 'Enregistrement…' : 'Enregistrer' }}
+          </button>
+          <button
+            type="button"
+            class="bouton bouton--sobre"
+            (click)="formulaireOuvert.set(false)"
+          >
+            Annuler
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <!-- ---------- Filtres ---------- -->
+  <form class="ad-filtres" (submit)="$event.preventDefault(); appliquer()">
+    <div class="champ">
+      <label class="champ__libelle" for="a-recherche">Rechercher</label>
+      <input
+        id="a-recherche"
+        class="champ__saisie"
+        type="search"
+        placeholder="Nom de l'article…"
+        [value]="recherche()"
+        (input)="recherche.set($any($event.target).value)"
+      />
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="a-filtre-rayon">Rayon</label>
+      <select
+        id="a-filtre-rayon"
+        class="ad-select"
+        [value]="idCategorie()"
+        (change)="idCategorie.set($any($event.target).value); appliquer()"
+      >
+        <option value="">Tous les rayons</option>
+        @for (rayon of categories(); track rayon.idCategorie) {
+          <option [value]="rayon.idCategorie">{{ rayon.nomCategorie }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="champ ad-filtres__case">
+      <label class="case">
+        <input
+          type="checkbox"
+          [checked]="seulementFaible()"
+          (change)="seulementFaible.set($any($event.target).checked); appliquer()"
+        />
+        <span>Stock faible ou nul ({{ seuilFaible }} et moins)</span>
+      </label>
+    </div>
+
+    <div class="ad-filtres__action">
+      <button type="submit" class="bouton bouton--plein">Rechercher</button>
+      @if (filtreActif()) {
+        <button type="button" class="bouton bouton--sobre" (click)="reinitialiser()">
+          Effacer
+        </button>
+      }
+    </div>
+  </form>
+
+  <!-- ---------- Liste ---------- -->
+  <section class="ad-carte liste">
+    @if (chargement()) {
+      <app-squelette forme="texte" [nombre]="6" annonce="Chargement du catalogue" />
+    } @else if (aucunResultat()) {
+      <p class="ad-vide">
+        @if (filtreActif()) {
+          Aucun article ne correspond à ces critères.
+        } @else {
+          Le catalogue est vide. Créez un premier article.
+        }
+      </p>
+    } @else {
+      <table class="ad-tableau">
+        <caption class="lecteur-seul">Articles du catalogue</caption>
+        <thead>
+          <tr>
+            <th scope="col">Article</th>
+            <th scope="col">Rayon</th>
+            <th scope="col">Prix</th>
+            <th scope="col">Stock</th>
+            <th scope="col"><span class="lecteur-seul">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (article of page().contenu; track article.idArticle) {
+            <tr>
+              <td data-libelle="Article">
+                <span class="ad-tableau__fort">{{ article.libelle }}</span>
+                @if (!article.imageUrl) {
+                  <span class="ad-appui">sans image</span>
+                }
+              </td>
+              <td data-libelle="Rayon">{{ article.nomCategorie }}</td>
+              <td data-libelle="Prix" class="ad-tableau__fort">
+                <app-montant [valeur]="article.prix" [devise]="false" />
+              </td>
+              <td data-libelle="Stock">
+                <span
+                  class="stock montant"
+                  [class.est-rupture]="(article.stock ?? 0) === 0"
+                  [class.est-faible]="estFaible(article.stock)"
+                >
+                  {{ article.stock ?? 0 }}
+                </span>
+              </td>
+              <td class="ad-tableau__actions">
+                <button type="button" class="ad-mini" (click)="ouvrirModification(article)">
+                  Modifier
+                </button>
+                <button
+                  type="button"
+                  class="ad-mini"
+                  [attr.aria-expanded]="stockOuvert() === article.idArticle"
+                  (click)="basculerStock(article.idArticle)"
+                >
+                  Stock
+                </button>
+                @if (retraitAConfirmer() === article.idArticle) {
+                  <button
+                    type="button"
+                    class="ad-mini ad-mini--confirme"
+                    (click)="retirer(article)"
+                  >
+                    Confirmer le retrait
+                  </button>
+                  <button
+                    type="button"
+                    class="ad-mini"
+                    (click)="retraitAConfirmer.set(null)"
+                  >
+                    Annuler
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="ad-mini ad-mini--danger"
+                    (click)="demanderRetrait(article)"
+                  >
+                    Retirer
+                  </button>
+                }
+              </td>
+            </tr>
+
+            @if (stockOuvert() === article.idArticle) {
+              <tr class="depli">
+                <td colspan="5">
+                  <form
+                    class="stockage"
+                    (submit)="$event.preventDefault(); ajusterStock(article.idArticle)"
+                  >
+                    <p class="stockage__intro">
+                      Stock actuel : <strong>{{ article.stock ?? 0 }}</strong>. Indiquez
+                      la <strong>variation</strong>, pas le nouveau total :
+                      « +10 » pour une réception, « -2 » pour une casse.
+                    </p>
+
+                    <div class="stockage__ligne">
+                      <div class="champ">
+                        <label class="champ__libelle" [attr.for]="'var-' + article.idArticle">
+                          Variation
+                        </label>
+                        <input
+                          [attr.id]="'var-' + article.idArticle"
+                          class="champ__saisie stockage__variation"
+                          type="number"
+                          inputmode="numeric"
+                          step="1"
+                          placeholder="+10"
+                          [value]="variation()"
+                          (input)="variation.set($any($event.target).value)"
+                        />
+                      </div>
+
+                      <div class="champ stockage__motif">
+                        <label class="champ__libelle" [attr.for]="'motif-' + article.idArticle">
+                          Motif
+                        </label>
+                        <input
+                          [attr.id]="'motif-' + article.idArticle"
+                          class="champ__saisie"
+                          type="text"
+                          maxlength="200"
+                          placeholder="Réception fournisseur, inventaire…"
+                          [value]="motifStock()"
+                          (input)="motifStock.set($any($event.target).value)"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        class="bouton bouton--plein"
+                        [disabled]="envoiStock() || !variationValide()"
+                      >
+                        Appliquer
+                      </button>
+                    </div>
+                  </form>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+
+      <app-pagination [page]="page()" unite="article" (aller)="charger($event)" />
+    }
+  </section>
+</div>

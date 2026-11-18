@@ -1,0 +1,162 @@
+:host {
+  display: block;
+}
+
+.ad-filtres__action {
+  display: flex;
+  gap: var(--e2);
+  align-items: flex-end;
+}
+
+.liste {
+  padding: var(--e4) var(--e5) var(--e5);
+}
+
+@media (max-width: 859px) {
+  .liste {
+    padding: var(--e2) var(--e4) var(--e4);
+  }
+}
+
+.ad-tableau tr.est-ouverte td {
+  background: var(--encre-brume);
+}
+
+.etat {
+  font-weight: 600;
+  color: var(--succes);
+}
+
+.etat.est-bloque {
+  color: var(--echec);
+}
+
+/* ---------- Fiche dépliée ---------- */
+
+.depli td {
+  background: var(--fond-doux);
+  padding: var(--e4) var(--e3) var(--e5);
+}
+
+.ad-tableau tbody tr.depli:hover td {
+  background: var(--fond-doux);
+}
+
+@media (max-width: 859px) {
+  .depli td {
+    display: block;
+    text-align: left;
+    padding: var(--e4) 0;
+  }
+
+  .depli td::before {
+    content: none;
+  }
+}
+
+.fiche {
+  display: grid;
+  gap: var(--e5);
+  grid-template-columns: 1fr;
+  text-align: left;
+}
+
+@media (min-width: 860px) {
+  .fiche {
+    grid-template-columns: 1.3fr 1fr;
+    gap: var(--e6);
+  }
+}
+
+.fiche__titre {
+  color: var(--texte-faible);
+  margin-bottom: var(--e3);
+}
+
+.fiche__titre:not(:first-child) {
+  margin-top: var(--e5);
+}
+
+.paires {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+}
+
+.paire {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e4);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.paire dd {
+  text-align: right;
+  color: var(--texte);
+}
+
+.paire__fort {
+  font-weight: 700;
+}
+
+.paire__appui {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  margin-left: var(--e2);
+}
+
+.panier,
+.recentes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+}
+
+.panier__ligne,
+.recente {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.panier__nom {
+  flex: 1;
+  min-width: 0;
+  color: var(--texte);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recente__id {
+  font-weight: 600;
+  color: var(--texte);
+  font-variant-numeric: tabular-nums;
+}
+
+.recente__montant {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--texte);
+}
+
+.fiche__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e2);
+}
+
+.fiche__note,
+.fiche__absent {
+  margin-top: var(--e2);
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  max-width: 42ch;
+}

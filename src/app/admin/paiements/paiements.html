@@ -1,0 +1,158 @@
+<div class="ad-page">
+  <header class="ad-entete">
+    <div>
+      <h1 class="ad-entete__titre">Paiements</h1>
+      <p class="ad-entete__sous">
+        Toutes les tentatives, réussies comme échouées, avec leur historique.
+      </p>
+    </div>
+  </header>
+
+  <form class="ad-filtres" (submit)="$event.preventDefault(); appliquer()">
+    <div class="champ">
+      <label class="champ__libelle" for="f-recherche">Rechercher</label>
+      <input
+        id="f-recherche"
+        class="champ__saisie"
+        type="search"
+        placeholder="Référence, numéro, client…"
+        [value]="recherche()"
+        (input)="recherche.set($any($event.target).value)"
+      />
+      <p class="champ__aide">
+        Référence interne ou opérateur, numéro payeur, nom ou email du client.
+      </p>
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="f-statut">Statut</label>
+      <select
+        id="f-statut"
+        class="ad-select"
+        [value]="statut()"
+        (change)="statut.set($any($event.target).value); appliquer()"
+      >
+        <option value="">Tous les statuts</option>
+        @for (s of statuts; track s.valeur) {
+          <option [value]="s.valeur">{{ s.libelle }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="f-operateur">Opérateur</label>
+      <select
+        id="f-operateur"
+        class="ad-select"
+        [value]="fournisseur()"
+        (change)="fournisseur.set($any($event.target).value); appliquer()"
+      >
+        <option value="">Les deux</option>
+        <option value="MTN_MOMO">MTN Mobile Money</option>
+        <option value="ORANGE_MONEY">Orange Money</option>
+      </select>
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="f-debut">Du</label>
+      <input
+        id="f-debut"
+        class="champ__saisie"
+        type="date"
+        [value]="debut()"
+        (change)="debut.set($any($event.target).value); appliquer()"
+      />
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="f-fin">Au</label>
+      <input
+        id="f-fin"
+        class="champ__saisie"
+        type="date"
+        [value]="fin()"
+        (change)="fin.set($any($event.target).value); appliquer()"
+      />
+    </div>
+
+    <div class="ad-filtres__action">
+      <button type="submit" class="bouton bouton--plein">Rechercher</button>
+      @if (filtreActif()) {
+        <button type="button" class="bouton bouton--sobre" (click)="reinitialiser()">
+          Effacer
+        </button>
+      }
+    </div>
+  </form>
+
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" [reessayable]="true" (reessayer)="charger(0)" />
+  }
+
+  <section class="ad-carte liste">
+    @if (chargement()) {
+      <app-squelette forme="texte" [nombre]="6" annonce="Chargement des paiements" />
+    } @else if (aucunResultat()) {
+      <p class="ad-vide">
+        @if (filtreActif()) {
+          Aucun paiement ne correspond à ces critères. Élargissez la
+          recherche ou effacez les filtres.
+        } @else {
+          Aucun paiement enregistré pour l'instant.
+        }
+      </p>
+    } @else {
+      <table class="ad-tableau">
+        <caption class="lecteur-seul">Liste des paiements</caption>
+        <thead>
+          <tr>
+            <th scope="col">Référence</th>
+            <th scope="col">Date</th>
+            <th scope="col">Client</th>
+            <th scope="col">Opérateur</th>
+            <th scope="col">Montant</th>
+            <th scope="col">Statut</th>
+            <th scope="col"><span class="lecteur-seul">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (paiement of page().contenu; track paiement.reference) {
+            <tr>
+              <td data-libelle="Référence">
+                <span class="ad-ref">{{ paiement.reference }}</span>
+                @if (paiement.tentative > 1) {
+                  <span class="liste__tentative">tentative nº {{ paiement.tentative }}</span>
+                }
+              </td>
+              <td data-libelle="Date">{{ horodatage(paiement.dateCreation) }}</td>
+              <td data-libelle="Client">
+                @if (paiement.nomClient) {
+                  <span class="ad-tableau__fort">{{ paiement.nomClient }}</span>
+                  <span class="ad-appui">{{ paiement.emailClient }}</span>
+                } @else {
+                  <span class="ad-appui">{{ paiement.numeroPayeur ?? '—' }}</span>
+                }
+              </td>
+              <td data-libelle="Opérateur" class="ad-cellule-marque">
+                <app-marque-paiement [fournisseur]="paiement.fournisseur" />
+              </td>
+              <td data-libelle="Montant" class="ad-tableau__fort">
+                <app-montant [valeur]="paiement.montant" />
+              </td>
+              <td data-libelle="Statut">
+                <app-tampon [statutPaiement]="paiement.statut" [petit]="true" />
+              </td>
+              <td class="ad-tableau__actions">
+                <a class="ad-mini" [routerLink]="['/admin/paiements', paiement.reference]">
+                  Détail
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <app-pagination [page]="page()" unite="paiement" (aller)="charger($event)" />
+    }
+  </section>
+</div>

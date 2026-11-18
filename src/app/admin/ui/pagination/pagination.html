@@ -1,0 +1,40 @@
+<div class="pg">
+  <p class="pg__decompte" aria-live="polite">{{ decompte() }}</p>
+
+  @if (utile()) {
+    <nav class="pg__nav" aria-label="Pages de résultats">
+      <button
+        type="button"
+        class="pg__fleche"
+        [disabled]="page().premiere"
+        aria-label="Page précédente"
+        (click)="choisir(page().page - 1)"
+      >
+        ‹
+      </button>
+
+      @for (numero of numeros(); track numero) {
+        <button
+          type="button"
+          class="pg__numero"
+          [class.est-courante]="numero === page().page"
+          [attr.aria-current]="numero === page().page ? 'page' : null"
+          [attr.aria-label]="'Page ' + (numero + 1)"
+          (click)="choisir(numero)"
+        >
+          {{ numero + 1 }}
+        </button>
+      }
+
+      <button
+        type="button"
+        class="pg__fleche"
+        [disabled]="page().derniere"
+        aria-label="Page suivante"
+        (click)="choisir(page().page + 1)"
+      >
+        ›
+      </button>
+    </nav>
+  }
+</div>

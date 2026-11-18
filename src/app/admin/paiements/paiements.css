@@ -1,0 +1,26 @@
+:host {
+  display: block;
+}
+
+.ad-filtres__action {
+  display: flex;
+  gap: var(--e2);
+  align-items: flex-end;
+}
+
+.liste {
+  padding: var(--e4) var(--e5) var(--e5);
+}
+
+@media (max-width: 859px) {
+  .liste {
+    padding: var(--e2) var(--e4) var(--e4);
+  }
+}
+
+.liste__tentative {
+  display: block;
+  font-size: var(--t-micro);
+  color: var(--alerte);
+  margin-top: 2px;
+}

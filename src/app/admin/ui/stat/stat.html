@@ -1,0 +1,24 @@
+<div class="st" [class.est-accent]="accent()">
+  <p class="st__libelle etiquette">{{ libelle() }}</p>
+  <p class="st__valeur montant">{{ valeur() }}</p>
+
+  @if (evolutionLisible(); as texte) {
+    <p
+      class="st__evolution"
+      [class.est-bonne]="bonne() === true"
+      [class.est-mauvaise]="bonne() === false"
+    >
+      <span class="st__fleche" aria-hidden="true">
+        @if (sens() === 'hausse') { ↑ } @else if (sens() === 'baisse') { ↓ } @else { → }
+      </span>
+      {{ texte }}
+      <span class="st__ref">vs période précédente</span>
+    </p>
+  } @else if (evolution() === null && detail() === '') {
+    <p class="st__evolution st__evolution--muette">Pas de comparaison possible</p>
+  }
+
+  @if (detail()) {
+    <p class="st__detail">{{ detail() }}</p>
+  }
+</div>

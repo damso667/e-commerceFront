@@ -12,6 +12,7 @@ import { Paiement } from '../../models/api.models';
 import { ApiService, ErreurBoutique } from '../../services/api.service';
 import { PaiementService } from '../../services/paiement.service';
 import { Alerte } from '../../ui/alerte/alerte';
+import { MarquePaiement } from '../../ui/marque-paiement/marque-paiement';
 import { Montant } from '../../ui/montant/montant';
 import { Tampon } from '../../ui/tampon/tampon';
 
@@ -31,7 +32,7 @@ import { Tampon } from '../../ui/tampon/tampon';
 @Component({
   selector: 'app-suivi',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Montant, Tampon, Alerte],
+  imports: [RouterLink, Montant, Tampon, Alerte, MarquePaiement],
   templateUrl: './suivi.html',
   styleUrl: './suivi.css',
 })

@@ -80,19 +80,68 @@
 }
 
 .operateur {
-  min-height: 56px;
+  position: relative;
+  min-height: 64px;
   padding: var(--e3) var(--e4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--trait);
   border-radius: var(--rayon);
   background: var(--fond);
-  font-size: var(--t-petit);
-  font-weight: 600;
   color: var(--texte-doux);
-  text-align: center;
+  /* La marque de l'operateur est le libelle : on lui donne de la place. */
+  --mp-h: 26px;
   transition:
     border-color var(--duree-courte) var(--sortie),
     color var(--duree-courte) var(--sortie),
     background var(--duree-courte) var(--sortie);
+}
+
+/* Non choisi, l'operateur est en retrait : la couleur de marque ne doit pas
+   crier des deux cotes a la fois, sinon rien ne signale le choix fait. */
+.operateur app-marque-paiement {
+  opacity: 0.62;
+  filter: saturate(0.55);
+  transition:
+    opacity var(--duree-courte) var(--sortie),
+    filter var(--duree-courte) var(--sortie);
+}
+
+.operateur:hover app-marque-paiement,
+.operateur.est-choisi app-marque-paiement {
+  opacity: 1;
+  filter: none;
+}
+
+/* Le cadre seul ne suffit pas a distinguer deux tuiles deja colorees :
+   une coche explicite dit lequel partira au paiement. */
+.operateur__coche {
+  position: absolute;
+  top: var(--e2);
+  right: var(--e2);
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--rayon-rond);
+  background: var(--encre);
+  color: var(--texte-inverse);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity var(--duree-courte) var(--sortie),
+    transform var(--duree-courte) var(--sortie);
+}
+
+.operateur__coche svg {
+  width: 11px;
+  height: 11px;
+}
+
+.operateur.est-choisi .operateur__coche {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .operateur:hover {

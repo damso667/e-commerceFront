@@ -1,0 +1,136 @@
+<div class="ad-page">
+  <header class="ad-entete">
+    <div>
+      <h1 class="ad-entete__titre">Avis</h1>
+      <p class="ad-entete__sous">
+        Seuls les clients ayant acheté et payé l'article peuvent en laisser un.
+      </p>
+    </div>
+    <button type="button" class="bouton bouton--contour" (click)="montrerSeveres()">
+      Voir les 1 étoile
+    </button>
+  </header>
+
+  @if (message(); as texte) {
+    <app-alerte [message]="texte" ton="succes" />
+  }
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" />
+  }
+
+  <form class="ad-filtres" (submit)="$event.preventDefault(); appliquer()">
+    <div class="champ">
+      <label class="champ__libelle" for="av-recherche">Rechercher</label>
+      <input
+        id="av-recherche"
+        class="champ__saisie"
+        type="search"
+        placeholder="Article, auteur, commentaire…"
+        [value]="recherche()"
+        (input)="recherche.set($any($event.target).value)"
+      />
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="av-note">Note</label>
+      <select
+        id="av-note"
+        class="ad-select"
+        [value]="note()"
+        (change)="note.set($any($event.target).value); appliquer()"
+      >
+        <option value="">Toutes les notes</option>
+        <option value="1">1 étoile</option>
+        <option value="2">2 étoiles</option>
+        <option value="3">3 étoiles</option>
+        <option value="4">4 étoiles</option>
+        <option value="5">5 étoiles</option>
+      </select>
+    </div>
+
+    <div class="ad-filtres__action">
+      <button type="submit" class="bouton bouton--plein">Rechercher</button>
+      @if (filtreActif()) {
+        <button type="button" class="bouton bouton--sobre" (click)="reinitialiser()">
+          Effacer
+        </button>
+      }
+    </div>
+  </form>
+
+  <section class="ad-carte liste">
+    @if (chargement()) {
+      <app-squelette forme="texte" [nombre]="6" annonce="Chargement des avis" />
+    } @else if (aucunResultat()) {
+      <p class="ad-vide">
+        @if (filtreActif()) {
+          Aucun avis ne correspond à ces critères.
+        } @else {
+          Aucun avis pour l'instant.
+        }
+      </p>
+    } @else {
+      <ul class="avis">
+        @for (avis of page().contenu; track avis.idAvis) {
+          <li class="avis__element">
+            <div class="avis__tete">
+              <span class="etoiles" aria-hidden="true">
+                @for (pleine of etoiles(avis.note); track $index) {
+                  <span class="etoile" [class.est-pleine]="pleine">★</span>
+                }
+              </span>
+              <span class="lecteur-seul">{{ avis.note }} sur 5</span>
+
+              <a class="avis__article" [routerLink]="['/article', avis.idArticle]">
+                {{ avis.libelleArticle }}
+              </a>
+
+              <time class="avis__date" [attr.datetime]="avis.dateAvis">
+                {{ date(avis.dateAvis) }}
+              </time>
+            </div>
+
+            <p class="avis__auteur">
+              {{ avis.nomAuteur }}
+              <span class="ad-appui">{{ avis.emailAuteur }}</span>
+            </p>
+
+            @if (avis.commentaire) {
+              <p class="avis__texte">{{ avis.commentaire }}</p>
+            } @else {
+              <p class="avis__sans">Note seule, sans commentaire.</p>
+            }
+
+            <div class="avis__actions">
+              @if (aConfirmer() === avis.idAvis) {
+                <p class="avis__confirme">
+                  Suppression définitive. L'avis ne pourra pas être rétabli.
+                </p>
+                <button
+                  type="button"
+                  class="ad-mini ad-mini--confirme"
+                  (click)="supprimer(avis)"
+                >
+                  Confirmer la suppression
+                </button>
+                <button type="button" class="ad-mini" (click)="aConfirmer.set(null)">
+                  Annuler
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  class="ad-mini ad-mini--danger"
+                  (click)="demanderSuppression(avis)"
+                >
+                  Supprimer
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+
+      <app-pagination [page]="page()" unite="avis" unitePluriel="avis" (aller)="charger($event)" />
+    }
+  </section>
+</div>

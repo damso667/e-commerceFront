@@ -1,0 +1,59 @@
+.pg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e3) var(--e4);
+  padding-top: var(--e4);
+  margin-top: var(--e3);
+  border-top: 1px solid var(--trait);
+}
+
+.pg__decompte {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+}
+
+.pg__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--e1);
+}
+
+.pg__numero,
+.pg__fleche {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 var(--e2);
+  border: 1px solid transparent;
+  border-radius: var(--rayon);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+  transition:
+    background var(--duree-courte) var(--sortie),
+    color var(--duree-courte) var(--sortie);
+}
+
+.pg__numero:hover:not(.est-courante),
+.pg__fleche:hover:not(:disabled) {
+  background: var(--fond-doux);
+  color: var(--texte);
+}
+
+.pg__numero.est-courante {
+  background: var(--encre);
+  color: var(--texte-inverse);
+}
+
+.pg__fleche {
+  font-size: var(--t-moyen);
+  line-height: 1;
+}
+
+.pg__fleche:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}

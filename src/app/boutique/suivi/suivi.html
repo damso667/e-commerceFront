@@ -107,7 +107,9 @@
         </div>
         <div class="details__ligne">
           <dt>Opérateur</dt>
-          <dd>{{ libelleFournisseur() }}</dd>
+          <dd class="details__operateur">
+            <app-marque-paiement [fournisseur]="p.fournisseur" />
+          </dd>
         </div>
         <div class="details__ligne">
           <dt>Numéro</dt>

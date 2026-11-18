@@ -1,0 +1,269 @@
+<div class="ad-page">
+  <p class="fil">
+    <a routerLink="/admin/paiements">← Tous les paiements</a>
+  </p>
+
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" />
+  }
+
+  @if (chargement()) {
+    <app-squelette forme="texte" [nombre]="7" annonce="Chargement du paiement" />
+  } @else if (detail(); as d) {
+    <header class="ad-entete">
+      <div>
+        <h1 class="ad-entete__titre">
+          Paiement <span class="ad-ref">{{ d.paiement.reference }}</span>
+        </h1>
+        <p class="ad-entete__sous">
+          Créé le {{ horodatage(d.paiement.dateCreation) }}
+        </p>
+      </div>
+      <app-tampon [statutPaiement]="d.paiement.statut" />
+    </header>
+
+    @if (consigne(); as texte) {
+      <!-- Un remboursement non automatique laisse un virement à faire à la
+           main : le dire est la seule façon d'éviter qu'on croie l'argent
+           déjà rendu. -->
+      <app-alerte
+        [message]="texte"
+        [ton]="remboursementAutomatique() ? 'succes' : 'attente'"
+      />
+    }
+
+    <div class="duo">
+      <!-- ---------- Le paiement ---------- -->
+      <section class="ad-carte">
+        <h2 class="ad-carte__titre">Le paiement</h2>
+        <dl class="fiche">
+          <div class="fiche__ligne">
+            <dt>Montant</dt>
+            <dd class="fiche__fort"><app-montant [valeur]="d.paiement.montant" /></dd>
+          </div>
+          <div class="fiche__ligne">
+            <dt>Opérateur</dt>
+            <dd class="fiche__marque">
+              <app-marque-paiement [fournisseur]="d.paiement.fournisseur" />
+            </dd>
+          </div>
+          <div class="fiche__ligne">
+            <dt>Numéro payeur</dt>
+            <dd>{{ d.paiement.numeroPayeur ?? '—' }}</dd>
+          </div>
+          <div class="fiche__ligne">
+            <dt>Tentative</dt>
+            <dd>nº {{ d.paiement.tentative }}</dd>
+          </div>
+          @if (d.paiement.datePaiement) {
+            <div class="fiche__ligne">
+              <dt>Payé le</dt>
+              <dd>{{ horodatage(d.paiement.datePaiement) }}</dd>
+            </div>
+          }
+          @if (d.paiement.dateExpiration) {
+            <div class="fiche__ligne">
+              <dt>Expire le</dt>
+              <dd>{{ horodatage(d.paiement.dateExpiration) }}</dd>
+            </div>
+          }
+          <div class="fiche__ligne">
+            <dt>Dernière mise à jour</dt>
+            <dd>{{ horodatage(d.paiement.dateMiseAJour) }}</dd>
+          </div>
+          @if (d.paiement.codeErreur) {
+            <div class="fiche__ligne">
+              <dt>Code d'erreur</dt>
+              <dd class="fiche__echec">{{ d.paiement.codeErreur }}</dd>
+            </div>
+          }
+          @if (d.paiement.message) {
+            <div class="fiche__ligne">
+              <dt>Message</dt>
+              <dd>{{ d.paiement.message }}</dd>
+            </div>
+          }
+        </dl>
+
+        <!-- ---------- Remboursement ---------- -->
+        @if (remboursable()) {
+          <div class="rembourser">
+            @if (!formulaireOuvert()) {
+              <button
+                type="button"
+                class="bouton bouton--contour"
+                (click)="formulaireOuvert.set(true)"
+              >
+                Rembourser ce paiement
+              </button>
+            } @else {
+              <form
+                class="rembourser__forme"
+                (submit)="$event.preventDefault(); rembourser()"
+              >
+                <p class="rembourser__avertissement">
+                  Le paiement passera en « Remboursé », état définitif qui ne
+                  peut pas être défait. Selon l'opérateur, le virement est
+                  automatique ou reste à faire à la main — ce sera indiqué
+                  après l'envoi.
+                </p>
+
+                @if (erreurRemboursement(); as texte) {
+                  <app-alerte [message]="texte" ton="echec" />
+                }
+
+                <div class="champ">
+                  <label class="champ__libelle" for="motif">Motif du remboursement</label>
+                  <textarea
+                    id="motif"
+                    class="champ__saisie rembourser__motif"
+                    rows="3"
+                    maxlength="500"
+                    placeholder="Article indisponible, demande du client…"
+                    [value]="motif()"
+                    (input)="motif.set($any($event.target).value)"
+                  ></textarea>
+                  <p class="champ__aide">
+                    Enregistré au journal d'audit, avec votre nom.
+                  </p>
+                </div>
+
+                <div class="rembourser__actions">
+                  <button
+                    type="submit"
+                    class="bouton bouton--plein"
+                    [disabled]="!peutRembourser()"
+                  >
+                    {{ envoi() ? 'Envoi…' : 'Confirmer le remboursement' }}
+                  </button>
+                  <button
+                    type="button"
+                    class="bouton bouton--sobre"
+                    (click)="formulaireOuvert.set(false)"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- ---------- La commande ---------- -->
+      <section class="ad-carte">
+        <h2 class="ad-carte__titre">La commande</h2>
+        <dl class="fiche">
+          <div class="fiche__ligne">
+            <dt>Numéro</dt>
+            <dd class="fiche__fort">nº {{ d.commande.idCommande }}</dd>
+          </div>
+          <div class="fiche__ligne">
+            <dt>Client</dt>
+            <dd>
+              {{ d.paiement.nomClient ?? d.commande.nomClient }}
+              @if (d.paiement.emailClient) {
+                <span class="ad-appui">{{ d.paiement.emailClient }}</span>
+              }
+            </dd>
+          </div>
+          <div class="fiche__ligne">
+            <dt>Statut</dt>
+            <dd><app-tampon [statutCommande]="d.commande.statut" [petit]="true" /></dd>
+          </div>
+          <div class="fiche__ligne">
+            <dt>Total</dt>
+            <dd class="fiche__fort"><app-montant [valeur]="d.commande.montantTotal" /></dd>
+          </div>
+        </dl>
+
+        <h3 class="sous-titre etiquette">Articles</h3>
+        <ul class="lignes">
+          @for (ligne of d.commande.lignes; track ligne.idArticle) {
+            <li class="lignes__ligne">
+              <span class="lignes__quantite montant">{{ ligne.quantite }}×</span>
+              <span class="lignes__nom">{{ ligne.libelle }}</span>
+              <app-montant class="lignes__prix" [valeur]="ligne.sousTotal" [devise]="false" />
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <!-- ---------- Toutes les tentatives ---------- -->
+    <section class="ad-carte">
+      <h2 class="ad-carte__titre">Tentatives de cette commande</h2>
+      @if (d.tentatives.length <= 1) {
+        <p class="ad-vide">Une seule tentative : celle-ci.</p>
+      } @else {
+        <table class="ad-tableau">
+          <thead>
+            <tr>
+              <th scope="col">Nº</th>
+              <th scope="col">Référence</th>
+              <th scope="col">Opérateur</th>
+              <th scope="col">Créée le</th>
+              <th scope="col">Statut</th>
+              <th scope="col">Motif</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (tentative of d.tentatives; track tentative.reference) {
+              <tr [class.est-courante]="tentative.reference === d.paiement.reference">
+                <td data-libelle="Nº" class="ad-tableau__fort">{{ tentative.tentative }}</td>
+                <td data-libelle="Référence">
+                  <span class="ad-ref">{{ tentative.reference }}</span>
+                </td>
+                <td data-libelle="Opérateur" class="ad-cellule-marque">
+                  <app-marque-paiement [fournisseur]="tentative.fournisseur" />
+                </td>
+                <td data-libelle="Créée le">{{ horodatage(tentative.dateCreation) }}</td>
+                <td data-libelle="Statut">
+                  <app-tampon [statutPaiement]="tentative.statut" [petit]="true" />
+                </td>
+                <td data-libelle="Motif">{{ tentative.codeErreur ?? '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+
+    <!-- ---------- Événements reçus ---------- -->
+    <section class="ad-carte">
+      <h2 class="ad-carte__titre">Événements reçus de l'opérateur</h2>
+      <p class="carte__appui">
+        Les callbacks tels qu'ils sont arrivés. Un doublon est conservé mais
+        n'a rien changé : la contrainte d'unicité et la machine à états
+        empêchent qu'un message en retard défasse un paiement abouti.
+      </p>
+
+      @if (d.evenements.length === 0) {
+        <p class="ad-vide">
+          Aucun callback reçu. Le statut vient alors du job de
+          réconciliation, qui interroge l'opérateur toutes les 30 secondes.
+        </p>
+      } @else {
+        <ol class="evenements">
+          @for (evenement of d.evenements; track evenement.id) {
+            <li class="evenement">
+              <div class="evenement__tete">
+                <span class="evenement__statut ad-tableau__fort">{{ evenement.statutRecu }}</span>
+                <time class="evenement__date" [attr.datetime]="evenement.dateReception">
+                  {{ horodatage(evenement.dateReception) }}
+                </time>
+              </div>
+              <p class="evenement__id ad-ref">{{ evenement.idEvenement }}</p>
+              @if (evenement.charge) {
+                <details class="evenement__charge">
+                  <summary>Voir la charge utile</summary>
+                  <pre>{{ lisible(evenement.charge) }}</pre>
+                </details>
+              }
+            </li>
+          }
+        </ol>
+      }
+    </section>
+  }
+</div>

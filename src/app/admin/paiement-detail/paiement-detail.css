@@ -1,0 +1,237 @@
+:host {
+  display: block;
+}
+
+.fil {
+  font-size: var(--t-petit);
+}
+
+.fil a {
+  color: var(--texte-doux);
+  text-decoration: none;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.fil a:hover {
+  color: var(--encre);
+  text-decoration: underline;
+}
+
+.duo {
+  display: grid;
+  gap: var(--e4);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+@media (min-width: 1000px) {
+  .duo {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.carte__appui {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  margin-top: calc(var(--e4) * -1 + var(--e2));
+  margin-bottom: var(--e4);
+  max-width: 62ch;
+}
+
+.sous-titre {
+  margin-top: var(--e5);
+  margin-bottom: var(--e3);
+  padding-top: var(--e4);
+  border-top: 1px solid var(--trait);
+  color: var(--texte-faible);
+}
+
+/* ---------- Fiche en paires ---------- */
+
+.fiche {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+}
+
+.fiche__ligne {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e4);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  padding-block: var(--e1);
+}
+
+.fiche__ligne dd {
+  text-align: right;
+  color: var(--texte);
+  min-width: 0;
+}
+
+.fiche__fort {
+  font-weight: 700;
+}
+
+.fiche__echec {
+  color: var(--echec);
+  font-weight: 600;
+}
+
+.fiche__marque {
+  --mp-h: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---------- Lignes de commande ---------- */
+
+.lignes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+}
+
+.lignes__ligne {
+  display: flex;
+  align-items: baseline;
+  gap: var(--e3);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.lignes__quantite {
+  color: var(--texte-faible);
+  flex-shrink: 0;
+}
+
+.lignes__nom {
+  flex: 1;
+  min-width: 0;
+  color: var(--texte);
+}
+
+.lignes__prix {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--texte);
+}
+
+/* ---------- Remboursement ---------- */
+
+.rembourser {
+  margin-top: var(--e5);
+  padding-top: var(--e4);
+  border-top: 1px solid var(--trait);
+}
+
+.rembourser__forme {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e4);
+}
+
+.rembourser__avertissement {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  background: var(--alerte-voile);
+  border-radius: var(--rayon);
+  padding: var(--e3) var(--e4);
+  max-width: 62ch;
+}
+
+.rembourser__motif {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.rembourser__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e3);
+}
+
+/* ---------- Tentatives ---------- */
+
+.ad-tableau tr.est-courante td {
+  background: var(--encre-brume);
+}
+
+/* ---------- Événements ---------- */
+
+.evenements {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e4);
+}
+
+.evenement {
+  padding-bottom: var(--e4);
+  border-bottom: 1px solid var(--trait);
+}
+
+.evenement:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.evenement__tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e3);
+}
+
+.evenement__statut {
+  font-size: var(--t-petit);
+}
+
+.evenement__date {
+  font-size: var(--t-micro);
+  color: var(--texte-faible);
+  font-variant-numeric: tabular-nums;
+}
+
+.evenement__id {
+  margin-top: var(--e1);
+  color: var(--texte-faible);
+}
+
+.evenement__charge {
+  margin-top: var(--e2);
+}
+
+.evenement__charge summary {
+  font-size: var(--t-micro);
+  color: var(--texte-doux);
+  cursor: pointer;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.evenement__charge summary:hover {
+  color: var(--encre);
+}
+
+.evenement__charge pre {
+  margin-top: var(--e2);
+  padding: var(--e3);
+  background: var(--fond-creux);
+  border-radius: var(--rayon);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: var(--t-micro);
+  color: var(--texte-doux);
+  overflow-x: auto;
+  white-space: pre;
+}

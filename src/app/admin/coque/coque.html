@@ -1,0 +1,46 @@
+<a class="evitement" href="#admin-contenu">Aller au contenu</a>
+
+<div class="adm">
+  <header class="adm__tete">
+    <a routerLink="/admin" class="adm__marque">
+      @if (logo()) {
+        <img class="adm__logo" [src]="logo()" [alt]="nom()" />
+      } @else {
+        <span class="adm__mono logotype" aria-hidden="true">{{ monogramme() }}</span>
+      }
+      <span class="adm__intitule">
+        <span class="adm__nom">{{ nom() }}</span>
+        <span class="adm__role etiquette">Back-office</span>
+      </span>
+    </a>
+
+    <div class="adm__actions">
+      <!-- Le retour en boutique est toujours à portée : l'administrateur
+           vérifie sans arrêt l'effet de ce qu'il vient de changer. -->
+      <a routerLink="/" class="adm__lien">Voir la boutique</a>
+      <button type="button" class="adm__lien" (click)="seDeconnecter()">Déconnexion</button>
+    </div>
+  </header>
+
+  <div class="adm__corps">
+    <nav class="adm__nav" aria-label="Rubriques du back-office">
+      <ul class="adm__liste">
+        @for (rubrique of rubriques; track rubrique.cle) {
+          <li>
+            <a
+              [routerLink]="['/admin', rubrique.chemin]"
+              routerLinkActive="est-actif"
+              class="adm__rubrique"
+            >
+              {{ rubrique.libelle }}
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <main id="admin-contenu" class="adm__panneau">
+      <router-outlet />
+    </main>
+  </div>
+</div>

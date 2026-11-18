@@ -1,0 +1,222 @@
+<div class="ad-page">
+  <header class="ad-entete">
+    <div>
+      <h1 class="ad-entete__titre">Commandes</h1>
+      <p class="ad-entete__sous">
+        Dépliez une ligne pour voir les articles et faire avancer la commande.
+      </p>
+    </div>
+    <button type="button" class="bouton bouton--contour" (click)="montrerAPreparer()">
+      À préparer
+    </button>
+  </header>
+
+  <form class="ad-filtres" (submit)="$event.preventDefault(); appliquer()">
+    <div class="champ">
+      <label class="champ__libelle" for="c-recherche">Rechercher</label>
+      <input
+        id="c-recherche"
+        class="champ__saisie"
+        type="search"
+        placeholder="Client, email, nº de commande…"
+        [value]="recherche()"
+        (input)="recherche.set($any($event.target).value)"
+      />
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="c-statut">Statut</label>
+      <select
+        id="c-statut"
+        class="ad-select"
+        [value]="statut()"
+        (change)="statut.set($any($event.target).value); appliquer()"
+      >
+        <option value="">Tous les statuts</option>
+        @for (s of statuts; track s.valeur) {
+          <option [value]="s.valeur">{{ s.libelle }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="c-debut">Du</label>
+      <input
+        id="c-debut"
+        class="champ__saisie"
+        type="date"
+        [value]="debut()"
+        (change)="debut.set($any($event.target).value); appliquer()"
+      />
+    </div>
+
+    <div class="champ">
+      <label class="champ__libelle" for="c-fin">Au</label>
+      <input
+        id="c-fin"
+        class="champ__saisie"
+        type="date"
+        [value]="fin()"
+        (change)="fin.set($any($event.target).value); appliquer()"
+      />
+    </div>
+
+    <div class="ad-filtres__action">
+      <button type="submit" class="bouton bouton--plein">Rechercher</button>
+      @if (filtreActif()) {
+        <button type="button" class="bouton bouton--sobre" (click)="reinitialiser()">
+          Effacer
+        </button>
+      }
+    </div>
+  </form>
+
+  @if (erreur(); as texte) {
+    <app-alerte [message]="texte" ton="echec" [reessayable]="true" (reessayer)="charger(0)" />
+  }
+
+  <section class="ad-carte liste">
+    @if (chargement()) {
+      <app-squelette forme="texte" [nombre]="6" annonce="Chargement des commandes" />
+    } @else if (aucunResultat()) {
+      <p class="ad-vide">
+        @if (filtreActif()) {
+          Aucune commande ne correspond à ces critères.
+        } @else {
+          Aucune commande pour l'instant.
+        }
+      </p>
+    } @else {
+      <table class="ad-tableau">
+        <caption class="lecteur-seul">Liste des commandes</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nº</th>
+            <th scope="col">Date</th>
+            <th scope="col">Client</th>
+            <th scope="col">Articles</th>
+            <th scope="col">Total</th>
+            <th scope="col">Statut</th>
+            <th scope="col"><span class="lecteur-seul">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (commande of page().contenu; track commande.idCommande) {
+            <tr [class.est-ouverte]="ouverte() === commande.idCommande">
+              <td data-libelle="Nº" class="ad-tableau__fort">{{ commande.idCommande }}</td>
+              <td data-libelle="Date">
+                {{ horodatage(commande.dateCreation ?? commande.dateCommande) }}
+              </td>
+              <td data-libelle="Client">
+                <span class="ad-tableau__fort">{{ commande.nomClient ?? 'Compte supprimé' }}</span>
+                @if (commande.emailClient) {
+                  <span class="ad-appui">{{ commande.emailClient }}</span>
+                }
+              </td>
+              <td data-libelle="Articles">{{ commande.nombreLignes }}</td>
+              <td data-libelle="Total" class="ad-tableau__fort">
+                <app-montant [valeur]="commande.montantTotal" />
+              </td>
+              <td data-libelle="Statut">
+                <app-tampon [statutCommande]="commande.statut" [petit]="true" />
+              </td>
+              <td class="ad-tableau__actions">
+                <button
+                  type="button"
+                  class="ad-mini"
+                  [attr.aria-expanded]="ouverte() === commande.idCommande"
+                  [attr.aria-controls]="'detail-' + commande.idCommande"
+                  (click)="basculer(commande.idCommande)"
+                >
+                  {{ ouverte() === commande.idCommande ? 'Replier' : 'Détail' }}
+                </button>
+              </td>
+            </tr>
+
+            @if (ouverte() === commande.idCommande) {
+              <tr class="depli">
+                <td [attr.id]="'detail-' + commande.idCommande" colspan="7">
+                  @if (detailEnCours()) {
+                    <app-squelette forme="texte" [nombre]="3" annonce="Chargement du détail" />
+                  } @else if (erreurDetail(); as texte) {
+                    <app-alerte [message]="texte" ton="echec" />
+                  }
+
+                  @if (detail(); as d) {
+                    <div class="depli__corps">
+                      <div class="depli__articles">
+                        <h3 class="depli__titre etiquette">Articles commandés</h3>
+                        <ul class="lignes">
+                          @for (ligne of d.lignes; track ligne.idArticle) {
+                            <li class="lignes__ligne">
+                              <span class="lignes__quantite montant">{{ ligne.quantite }}×</span>
+                              <span class="lignes__nom">{{ ligne.libelle }}</span>
+                              <app-montant
+                                class="lignes__prix"
+                                [valeur]="ligne.sousTotal"
+                                [devise]="false"
+                              />
+                            </li>
+                          }
+                        </ul>
+                      </div>
+
+                      <div class="depli__cote">
+                        <h3 class="depli__titre etiquette">Paiement</h3>
+                        @if (d.referencePaiement) {
+                          <p class="depli__paiement">
+                            <app-tampon
+                              [statutPaiement]="d.statutPaiement"
+                              [petit]="true"
+                            />
+                            <a
+                              class="ad-mini"
+                              [routerLink]="['/admin/paiements', d.referencePaiement]"
+                            >
+                              Voir le paiement
+                            </a>
+                          </p>
+                        } @else {
+                          <p class="depli__absent">Aucune tentative de paiement.</p>
+                        }
+
+                        <h3 class="depli__titre etiquette">Faire avancer</h3>
+                        @if (transitions(d.statut).length === 0) {
+                          <p class="depli__absent">
+                            {{ libelle(d.statut) }} : plus rien à faire sur cette
+                            commande.
+                          </p>
+                        } @else {
+                          <div class="depli__actions">
+                            @for (suite of transitions(d.statut); track suite) {
+                              <button
+                                type="button"
+                                class="ad-mini"
+                                [class.ad-mini--danger]="suite === 'ANNULEE'"
+                                [disabled]="changementEnCours()"
+                                (click)="changerStatut(d.idCommande, suite)"
+                              >
+                                {{ libelleAction(suite) }}
+                              </button>
+                            }
+                          </div>
+                          @if (transitions(d.statut).includes('ANNULEE')) {
+                            <p class="depli__note">
+                              Annuler remet les articles en stock.
+                            </p>
+                          }
+                        }
+                      </div>
+                    </div>
+                  }
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+
+      <app-pagination [page]="page()" unite="commande" (aller)="charger($event)" />
+    }
+  </section>
+</div>

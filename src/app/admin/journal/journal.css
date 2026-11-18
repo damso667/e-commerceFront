@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.ad-filtres__action {
+  display: flex;
+  gap: var(--e2);
+  align-items: flex-end;
+}
+
+.liste {
+  padding: var(--e4) var(--e5) var(--e5);
+}
+
+@media (max-width: 859px) {
+  .liste {
+    padding: var(--e2) var(--e4) var(--e4);
+  }
+}
+
+.journal__date {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-faible);
+}
+
+.journal__action {
+  font-weight: 600;
+  color: var(--texte);
+}
+
+/* Les actions qui retirent, suppriment ou remboursent se repèrent d'un
+   coup d'œil : ce sont celles qu'on relit après coup. */
+.journal__action.est-sensible {
+  color: var(--echec);
+}
+
+.journal__details {
+  max-width: 44ch;
+  color: var(--texte-doux);
+}
+
+@media (max-width: 859px) {
+  .journal__details {
+    max-width: none;
+    text-align: right;
+  }
+}

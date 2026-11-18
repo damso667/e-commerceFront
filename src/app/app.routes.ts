@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { gardeConnecte } from './core/gardes';
+import { gardeAdmin, gardeConnecte } from './core/gardes';
 
 /**
  * Toutes les routes de contenu sont chargées à la demande
@@ -12,6 +12,72 @@ import { gardeConnecte } from './core/gardes';
  * boutique et le back-office n'ont ni le même en-tête ni la même densité.
  */
 export const routes: Routes = [
+  {
+    // Le back-office est déclaré avant la boutique : son arbre a sa propre
+    // coque, et le joker de la boutique avalerait « admin » s'il passait
+    // en premier.
+    path: 'admin',
+    loadComponent: () => import('./admin/coque/coque').then((m) => m.CoqueAdmin),
+    canActivate: [gardeAdmin],
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'tableau-de-bord' },
+      {
+        path: 'tableau-de-bord',
+        loadComponent: () =>
+          import('./admin/tableau-de-bord/tableau-de-bord').then((m) => m.AdminTableauDeBord),
+        title: 'Tableau de bord',
+      },
+      {
+        path: 'commandes',
+        loadComponent: () => import('./admin/commandes/commandes').then((m) => m.AdminCommandes),
+        title: 'Commandes',
+      },
+      {
+        path: 'paiements',
+        loadComponent: () => import('./admin/paiements/paiements').then((m) => m.AdminPaiements),
+        title: 'Paiements',
+      },
+      {
+        path: 'paiements/:reference',
+        loadComponent: () =>
+          import('./admin/paiement-detail/paiement-detail').then((m) => m.AdminPaiementDetail),
+        title: 'Détail du paiement',
+      },
+      {
+        path: 'articles',
+        loadComponent: () => import('./admin/articles/articles').then((m) => m.AdminArticles),
+        title: 'Catalogue',
+      },
+      {
+        path: 'clients',
+        loadComponent: () => import('./admin/clients/clients').then((m) => m.AdminClients),
+        title: 'Clients',
+      },
+      {
+        path: 'avis',
+        loadComponent: () => import('./admin/avis/avis').then((m) => m.AdminAvis),
+        title: 'Avis',
+      },
+      {
+        path: 'journal',
+        loadComponent: () => import('./admin/journal/journal').then((m) => m.AdminJournal),
+        title: "Journal d'audit",
+      },
+      {
+        path: 'identite',
+        loadComponent: () => import('./admin/identite/identite').then((m) => m.AdminIdentite),
+        title: 'Identité de la boutique',
+      },
+      {
+        // Une URL inconnue sous /admin n'est pas une page de boutique
+        // manquante : le message doit le dire.
+        path: '**',
+        loadComponent: () => import('./introuvable/introuvable').then((m) => m.Introuvable),
+        data: { cas: 'admin' },
+        title: 'Page introuvable',
+      },
+    ],
+  },
   {
     path: '',
     loadComponent: () => import('./boutique/coque/coque').then((m) => m.CoqueBoutique),
