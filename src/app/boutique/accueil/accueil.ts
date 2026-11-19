@@ -12,6 +12,33 @@ import { Carrousel, Diapositive } from '../../ui/carrousel/carrousel';
 import { EtatVide } from '../../ui/etat-vide/etat-vide';
 import { Squelette } from '../../ui/squelette/squelette';
 
+/**
+ * Images du carrousel de l'accueil — **c'est ici qu'on les change.**
+ *
+ * Une entrée par diapositive, dans l'ordre d'affichage :
+ *
+ *   [0] la diapositive du catalogue
+ *   [1] le rayon le plus fourni
+ *   [2] le rayon suivant
+ *
+ * Mettre `null` laisse la diapositive en composition typographique : pas
+ * de rectangle gris, pas de « image à venir ». Une adresse en ligne
+ * (`https://…`) fonctionne ; un fichier posé dans `public/` et appelé par
+ * `/ma-banniere.jpg` est plus sûr, puisqu'il ne dépend d'aucun serveur
+ * tiers.
+ *
+ * Deux diapositives peuvent partager la même adresse, mais le carrousel
+ * paraîtra cassé : mieux vaut une image par entrée, ou `null`.
+ *
+ * Format conseillé : large et basse, autour de 1600 × 900, sous 300 Ko.
+ * C'est la première image de la page.
+ */
+const IMAGES_CARROUSEL: (string | null)[] = [
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTsSHe2NQgag43Oo18HN9Vba7FFAE6tNRm9K4Lf3k0sw&s=10",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQRqxzQABSd07dKtWq2XOpRM-vmUeweyZjyCXe5VrRzg&s=10",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTmlulemVxZHvoAHIyfc64hSsf5dued4yeqY6a8wJWQQ&s=10",
+];
+
 /** Un rayon mis en avant sur l'accueil. */
 interface Rayon {
   idCategorie: number;
@@ -68,8 +95,8 @@ export class Accueil {
    *
    * Construites à partir de données réelles : le nombre d'articles et les
    * rayons existants. Aucun slogan commercial inventé, aucune promotion
-   * fictive. Quand des photos seront fournies, elles se poseront ici via
-   * `imageUrl` sans changer la structure.
+   * fictive. Les images, elles, se choisissent dans
+   * {@link IMAGES_CARROUSEL}, en haut de ce fichier.
    */
   protected readonly diapositives = computed<Diapositive[]>(() => {
     const liste = this.articles();
@@ -77,37 +104,20 @@ export class Accueil {
       return [];
     }
 
-    // Une photo ne sert qu'une fois : deux diapositives qui montrent la
-    // meme image donnent l'impression d'un carrousel cassé, et c'est ce
-    // qui arrivait quand l'adresse était écrite dans la boucle.
-    const deja = new Set<string>();
-    const photoDe = (articles: Article[]): string | null => {
-      const trouve = articles.find((a) => a.imageUrl && !deja.has(a.imageUrl));
-      if (!trouve?.imageUrl) {
-        return null;
-      }
-      deja.add(trouve.imageUrl);
-      return trouve.imageUrl;
-    };
-
     // Les deux rayons les plus fournis : une mise en avant qui dit vrai.
     const parTaille = [...this.rayons()].sort((a, b) => b.total - a.total).slice(0, 2);
 
-    // Les rayons choisissent leur photo en premier : chacun prend une
-    // image de ses propres articles, ce qui est la seule façon d'illustrer
-    // « Vêtement » avec un vêtement sans écrire de correspondance en dur.
-    // Une table id-de-rayon vers adresse ne survivrait pas au premier
-    // marchand qui renomme ou réordonne ses rayons.
-    const diaposRayons: Diapositive[] = parTaille.map((rayon) => ({
+    const diaposRayons: Diapositive[] = parTaille.map((rayon, rang) => ({
       id: `rayon-${rayon.idCategorie}`,
       titre: rayon.nom,
       texte: `${rayon.total} article${rayon.total > 1 ? 's' : ''} dans ce rayon.`,
       lien: '/catalogue',
-      // Sans ce filtre, les diapositives menaient toutes au catalogue
+      // Sans ce filtre, les trois diapositives menaient toutes au catalogue
       // entier : « Voir le rayon » promettait ce que le clic ne tenait pas.
       parametresLien: { categorie: rayon.idCategorie },
       libelleLien: 'Voir le rayon',
-      imageUrl: photoDe(this.articlesDuRayon(rayon.idCategorie)),
+      // rang 0 est la deuxième image de la liste, rang 1 la troisième.
+      imageUrl: IMAGES_CARROUSEL[rang + 1],
     }));
 
     return [
@@ -117,16 +127,11 @@ export class Accueil {
         texte: 'Payez avec MTN Mobile Money ou Orange Money, depuis votre téléphone.',
         lien: '/catalogue',
         libelleLien: 'Voir le catalogue',
-        imageUrl: photoDe(liste),
+        imageUrl: IMAGES_CARROUSEL[0],
       },
       ...diaposRayons,
     ];
   });
-
-  /** Tous les articles d'un rayon, et pas seulement les quatre affichés. */
-  private articlesDuRayon(idCategorie: number): Article[] {
-    return (this.articles() ?? []).filter((a) => a.categorieId === idCategorie);
-  }
 
   /** Sélection d'ouverture : les articles les mieux approvisionnés. */
   protected readonly vedettes = computed(() =>

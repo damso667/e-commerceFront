@@ -28,6 +28,11 @@
   aspect-ratio: 4 / 5;
   display: grid;
   isolation: isolate;
+  /* Un element de grille vaut au minimum son contenu : sans cela, un titre
+     tres long sur un ecran etroit repousserait le bas du voile et ferait
+     reapparaitre le saut de hauteur que le ratio sert a empecher. */
+  min-height: 0;
+  overflow: hidden;
 }
 
 @media (min-width: 620px) {
@@ -42,9 +47,22 @@
   }
 }
 
+/* Le fond est sorti du flux.
+
+   `height: 100%` ne pouvait pas se resoudre : la hauteur du parent vient
+   d'`aspect-ratio`, qui n'est pas une hauteur definie au sens des
+   pourcentages. La regle retombait donc sur `auto`, et une photo en
+   portrait se rendait a sa proportion naturelle — 1436 px au lieu de 391
+   sur grand ecran — en tirant toute la piste avec elle. Tant qu'aucune
+   photo n'etait fournie le defaut ne se voyait pas : une composition
+   typographique est un div sans taille propre.
+
+   En position absolue, l'image remplit la diapositive sans jamais pouvoir
+   la dimensionner. C'est `aspect-ratio` qui decide, seul. */
 .car__image,
 .car__typo {
-  grid-area: 1 / 1;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
