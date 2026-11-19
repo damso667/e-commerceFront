@@ -18,6 +18,15 @@ export interface Diapositive {
   titre: string;
   texte?: string;
   lien?: string;
+  /**
+   * Paramètres de requête du lien, par exemple le rayon à filtrer.
+   *
+   * Ils ne peuvent pas être collés dans `lien` : `routerLink` traite une
+   * chaîne comme un chemin et encoderait `?categorie=3` en segment. Sans
+   * ce champ, une diapositive « Voir le rayon » atterrit sur le catalogue
+   * entier — elle annonce un filtre qu'elle n'applique pas.
+   */
+  parametresLien?: Record<string, string | number>;
   libelleLien?: string;
   /**
    * Photo pleine largeur. Tant qu'aucune photo n'est fournie, la

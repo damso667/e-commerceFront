@@ -76,28 +76,57 @@ export class Accueil {
     if (!liste || liste.length === 0) {
       return [];
     }
-    const diapos: Diapositive[] = [
+
+    // Une photo ne sert qu'une fois : deux diapositives qui montrent la
+    // meme image donnent l'impression d'un carrousel cassé, et c'est ce
+    // qui arrivait quand l'adresse était écrite dans la boucle.
+    const deja = new Set<string>();
+    const photoDe = (articles: Article[]): string | null => {
+      const trouve = articles.find((a) => a.imageUrl && !deja.has(a.imageUrl));
+      if (!trouve?.imageUrl) {
+        return null;
+      }
+      deja.add(trouve.imageUrl);
+      return trouve.imageUrl;
+    };
+
+    // Les deux rayons les plus fournis : une mise en avant qui dit vrai.
+    const parTaille = [...this.rayons()].sort((a, b) => b.total - a.total).slice(0, 2);
+
+    // Les rayons choisissent leur photo en premier : chacun prend une
+    // image de ses propres articles, ce qui est la seule façon d'illustrer
+    // « Vêtement » avec un vêtement sans écrire de correspondance en dur.
+    // Une table id-de-rayon vers adresse ne survivrait pas au premier
+    // marchand qui renomme ou réordonne ses rayons.
+    const diaposRayons: Diapositive[] = parTaille.map((rayon) => ({
+      id: `rayon-${rayon.idCategorie}`,
+      titre: rayon.nom,
+      texte: `${rayon.total} article${rayon.total > 1 ? 's' : ''} dans ce rayon.`,
+      lien: '/catalogue',
+      // Sans ce filtre, les diapositives menaient toutes au catalogue
+      // entier : « Voir le rayon » promettait ce que le clic ne tenait pas.
+      parametresLien: { categorie: rayon.idCategorie },
+      libelleLien: 'Voir le rayon',
+      imageUrl: photoDe(this.articlesDuRayon(rayon.idCategorie)),
+    }));
+
+    return [
       {
         id: 'catalogue',
         titre: `${liste.length} articles à découvrir`,
         texte: 'Payez avec MTN Mobile Money ou Orange Money, depuis votre téléphone.',
         lien: '/catalogue',
         libelleLien: 'Voir le catalogue',
+        imageUrl: photoDe(liste),
       },
+      ...diaposRayons,
     ];
-    // Les deux rayons les plus fournis : une mise en avant qui dit vrai.
-    const parTaille = [...this.rayons()].sort((a, b) => b.total - a.total).slice(0, 2);
-    for (const rayon of parTaille) {
-      diapos.push({
-        id: `rayon-${rayon.idCategorie}`,
-        titre: rayon.nom,
-        texte: `${rayon.total} article${rayon.total > 1 ? 's' : ''} dans ce rayon.`,
-        lien: '/catalogue',
-        libelleLien: 'Voir le rayon',
-      });
-    }
-    return diapos;
   });
+
+  /** Tous les articles d'un rayon, et pas seulement les quatre affichés. */
+  private articlesDuRayon(idCategorie: number): Article[] {
+    return (this.articles() ?? []).filter((a) => a.categorieId === idCategorie);
+  }
 
   /** Sélection d'ouverture : les articles les mieux approvisionnés. */
   protected readonly vedettes = computed(() =>

@@ -42,7 +42,11 @@
               <p class="car__texte">{{ diapo.texte }}</p>
             }
             @if (diapo.lien) {
-              <a class="bouton bouton--plein car__action" [routerLink]="diapo.lien">
+              <a
+                class="bouton bouton--plein car__action"
+                [routerLink]="diapo.lien"
+                [queryParams]="diapo.parametresLien || {}"
+              >
                 {{ diapo.libelleLien || 'Découvrir' }}
               </a>
             }
